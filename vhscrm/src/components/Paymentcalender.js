@@ -77,10 +77,12 @@ function Paymentcalender() {
     setFilteredData(newFilteredData);
     const convertedsDate = moment(range.start).format("YYYY-MM-DD");
     const convertedeDate = moment(range.end).format("YYYY-MM-DD");
-    console.log(convertedsDate);
+
     setrstart(convertedsDate);
     setrend(convertedeDate);
   };
+
+  console.log(rstart, rend);
 
   useEffect(() => {
     getAlldsr();

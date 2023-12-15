@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 const defaultstate = 1;
 
 function Enquiryadd() {
-  const [response, setResponse] = useState(null);
   const navigate = useNavigate();
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [citydata, setcitydata] = useState([]);
@@ -16,7 +15,7 @@ function Enquiryadd() {
   const [latestEnquiryId, setLatestEnquiryId] = useState(0);
   const [whatsappTemplate, setWhatsappTemplate] = useState("");
   const [enquirydate, setenquirydate] = useState(moment().format("MM-DD-YYYY"));
-  const [executive, setexecutive] = useState("pankaj");
+
   const [name, setname] = useState("");
   const [email, setemail] = useState("");
   const [contact1, setcontact1] = useState("");
@@ -28,7 +27,7 @@ function Enquiryadd() {
   const [reference2, setreference2] = useState("");
   const [reference3, setreference3] = useState("");
   const [comment, setcomment] = useState("");
-  const [time, settime] = useState(moment().format("h:mm:ss a"));
+
   const [serivceName, setSeviceName] = useState("");
   const [serivceId, setSeviceId] = useState("");
   const apiURL = process.env.REACT_APP_API_URL;
@@ -144,19 +143,10 @@ function Enquiryadd() {
         };
         await axios(config).then(function (response) {
           if (response.status === 200) {
-            console.log("success");
-            // const data =  response.json();
-
-            // Assuming the structure matches your previous example
             const enquiryId = response.data.data.EnquiryId;
-            console.log(enquiryId)
 
-            const responce = response.data;
-         
             makeApiCall(getTemplateDatails, contact1);
-            navigate(
-              `/enquirydetail/${enquiryId}`
-            );
+            navigate(`/enquirydetail/${enquiryId}`);
           }
         });
       } catch (error) {
@@ -203,11 +193,8 @@ function Enquiryadd() {
       admin?.contactno
     );
 
-   
-
-   
-      // Replace <p> with line breaks and remove HTML tags
-      const convertedText = contentWithMobile
+    // Replace <p> with line breaks and remove HTML tags
+    const convertedText = contentWithMobile
       .replace(/<p>/g, "\n")
       .replace(/<\/p>/g, "")
       .replace(/<br>/g, "\n")
@@ -233,7 +220,6 @@ function Enquiryadd() {
 
       if (response.status === 200) {
         setWhatsappTemplate(response.data);
- 
       } else {
         console.error("API call unsuccessful. Status code:", response.status);
       }
@@ -241,8 +227,6 @@ function Enquiryadd() {
       console.error("Error making API call:", error);
     }
   };
-
-
 
   useEffect(() => {
     getcity();

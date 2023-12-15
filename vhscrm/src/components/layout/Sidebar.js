@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  FaTh,
-  FaBars,
-  FaUserAlt,
-  FaRegChartBar,
-  FaCommentAlt,
-  FaShoppingBag,
-  FaThList,
-} from "react-icons/fa";
+
 import { NavLink } from "react-router-dom";
 
 const Sidebar = ({ children }) => {
@@ -98,11 +90,12 @@ const Sidebar = ({ children }) => {
       // icon: <FaThList />,
     });
   }
-  menuItem.push({
-    path: "/paymentcalender",
-    name: "Payment Reports",
-  });
-
+  if (admin && admin.paymentReport === true) {
+    menuItem.push({
+      path: "/paymentcalender",
+      name: "Payment Reports",
+    });
+  }
   if (admin && admin.b2b === true) {
     menuItem.push({
       path: "/b2badd",

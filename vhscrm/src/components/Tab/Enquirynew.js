@@ -38,7 +38,6 @@ function Enquirynew() {
   const getenquiry = async () => {
     let res = await axios.get(apiURL + "/getallflwdata");
     if ((res.status = 200)) {
-      
       const data = res.data?.enquiryfollowup;
 
       const latestRecords = {};
@@ -61,12 +60,7 @@ function Enquirynew() {
     }
   };
 
-  console.log("searchResults",searchResults)
-
-
-
   const enquirydetail = (data) => {
-    console.log("asdadas", data?.EnquiryId);
     navigate(`/enquirydetail/${data.EnquiryId}`);
   };
 
@@ -264,10 +258,8 @@ function Enquirynew() {
           </div>
           <table>
             <thead>
-              <tr className="tr ">
-                <th scope="col">
-                  <input className="vhs-table-input" />{" "}
-                </th>
+              <tr className="bg">
+                <th scope="col"></th>
                 <th scope="col">
                   {" "}
                   <select
@@ -275,9 +267,13 @@ function Enquirynew() {
                     onChange={(e) => setSearchCatagory(e.target.value)}
                   >
                     <option value="">Select</option>
-                    {searchResults.map((e) => (
-                      <option value={e.category} key={e.category}>
-                        {e.category}{" "}
+                    {[
+                      ...new Set(
+                        filterdata?.map((category) => category.category)
+                      ),
+                    ].map((uniquecategory) => (
+                      <option value={uniquecategory} key={uniquecategory}>
+                        {uniquecategory}
                       </option>
                     ))}
                   </select>{" "}
@@ -286,7 +282,6 @@ function Enquirynew() {
                   {" "}
                   <input
                     className="vhs-table-input"
-                    placeholder="Enq Date "
                     value={searchDateTime}
                     onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
@@ -295,7 +290,6 @@ function Enquirynew() {
                 <th scope="col">
                   {" "}
                   <input
-                    placeholder="Name"
                     className="vhs-table-input"
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
@@ -304,7 +298,6 @@ function Enquirynew() {
                 <th scope="col">
                   {" "}
                   <input
-                    placeholder="Contact"
                     className="vhs-table-input"
                     value={searchContact}
                     onChange={(e) => setSearchContact(e.target.value)}
@@ -313,7 +306,6 @@ function Enquirynew() {
                 <th scope="col">
                   {" "}
                   <input
-                    placeholder="Address"
                     className="vhs-table-input"
                     value={searchAddress}
                     onChange={(e) => setSearchAddress(e.target.value)}
@@ -326,12 +318,14 @@ function Enquirynew() {
                     onChange={(e) => setSearchCity(e.target.value)}
                   >
                     <option value="">Select </option>
-                    {searchResults.map((e) => (
-                      <option
-                        value={e.enquirydata[0]?.city}
-                        key={e.enquirydata[0]?.city}
-                      >
-                        {e.enquirydata[0]?.city}{" "}
+
+                    {[
+                      ...new Set(
+                        filterdata?.map((i) => i.enquirydata[0]?.city)
+                      ),
+                    ].map((uniqueCity) => (
+                      <option value={uniqueCity} key={uniqueCity}>
+                        {uniqueCity}
                       </option>
                     ))}
                   </select>{" "}
@@ -339,7 +333,6 @@ function Enquirynew() {
 
                 <th scope="col">
                   <input
-                    placeholder="Reference"
                     className="vhs-table-input"
                     value={searchReference2}
                     onChange={(e) => setSearchReference2(e.target.value)}
@@ -349,7 +342,6 @@ function Enquirynew() {
                 <th scope="col">
                   {" "}
                   <input
-                    placeholder="Interested For"
                     className="vhs-table-input"
                     value={searchInterest}
                     onChange={(e) => setSearchInterest(e.target.value)}
@@ -358,7 +350,6 @@ function Enquirynew() {
                 <th scope="col">
                   {" "}
                   <input
-                    placeholder="foll date"
                     className="vhs-table-input"
                     value={searchFolldate}
                     onChange={(e) => setSearchFolldate(e.target.value)}
@@ -367,7 +358,6 @@ function Enquirynew() {
 
                 <th scope="col">
                   <input
-                    placeholder="Staff"
                     className="vhs-table-input"
                     value={searchStaff}
                     onChange={(e) => setSearchStaff(e.target.value)}
@@ -375,7 +365,6 @@ function Enquirynew() {
                 </th>
                 <th scope="col">
                   <input
-                    placeholder="Response"
                     className="vhs-table-input"
                     value={searchResponse}
                     onChange={(e) => setSearchResponse(e.target.value)}
@@ -383,7 +372,6 @@ function Enquirynew() {
                 </th>
                 <th scope="col">
                   <input
-                    placeholder="Desc"
                     className="vhs-table-input"
                     value={searchDesc}
                     onChange={(e) => setSearchDesc(e.target.value)}
@@ -391,7 +379,6 @@ function Enquirynew() {
                 </th>
                 <th scope="col">
                   <input
-                    placeholder="Nxt foll"
                     className="vhs-table-input"
                     value={searchNxtfoll}
                     onChange={(e) => setSearchNxtfoll(e.target.value)}

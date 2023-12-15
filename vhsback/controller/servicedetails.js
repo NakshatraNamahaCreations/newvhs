@@ -104,6 +104,7 @@ class servicedetails {
             $lte: endDate,
           },
         })
+        .lean()
         .sort({ _id: -1 })
         .select("dividedamtDates");
       let totalCount = 0;
@@ -889,24 +890,7 @@ class servicedetails {
         .json({ error: "Internal Server Error", message: error.message });
     }
   }
-  async getDevidedate(req, res) {
-    let { category } = req.body;
 
-    try {
-      let data = await servicedetailsmodel
-        .find({ category, dividedDates: { $exists: true, $ne: null } })
-        .sort({ _id: -1 })
-        .select("dividedDates");
-
-      if (data && data.length > 0) {
-        return res.json({ dividedDates: data });
-      } else {
-        return res.json({ dividedDates: [] }); // Return an empty array if no valid data found
-      }
-    } catch (error) {
-      return res.status(500).json({ error: "Something went wrong" });
-    }
-  }
   async findbyserviceID(req, res) {
     try {
       let userId = req.params.id;

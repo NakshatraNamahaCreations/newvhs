@@ -1,5 +1,7 @@
 const usermodel = require("../../model/master/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { SECRET_KEY } = require("../../config/secretKey");
 
 class masteruser {
   // add
@@ -77,7 +79,7 @@ class masteruser {
         displayname,
         contactno,
         loginnameOrEmail,
-        password:hashedPassword,
+        password: hashedPassword,
       });
 
       // Save the user
@@ -110,7 +112,7 @@ class masteruser {
           .status(404)
           .json({ error: "User not found or invalid password" });
       }
-      const passwordmatch=bcrypt.compareSync(password,user.password)
+      const passwordmatch = bcrypt.compareSync(password, user.password);
       if (!passwordmatch) {
         return res.status(401).json({ error: "Invalid password" });
       }
@@ -125,6 +127,45 @@ class masteruser {
     }
   }
 
+  // async loginUser(req, res) {
+  //   const { loginnameOrEmail, password } = req.body;
+  //   try {
+  //     if (!loginnameOrEmail) {
+  //       return res
+  //         .status(400)
+  //         .json({ error: "Please enter your loginname or email" });
+  //     }
+  //     if (!password) {
+  //       return res.status(400).json({ error: "Please enter your password" });
+  //     }
+  //     const user = await usermodel.findOne({ loginnameOrEmail });
+  //     if (!user) {
+  //       return res
+  //         .status(404)
+  //         .json({ error: "User not found or invalid password" });
+  //     }
+  //     const passwordmatch = bcrypt.compareSync(password, user.password);
+  //     if (!passwordmatch) {
+  //       return res.status(401).json({ error: "Invalid password" });
+  //     }
+
+  //     // Generate JWT token
+  //     const token = jwt.sign({ userId: user._id }, SECRET_KEY, {
+  //       expiresIn: "1h",
+  //     });
+
+  //     // Update user status to "Online"
+  //     await usermodel.findOneAndUpdate(
+  //       { loginnameOrEmail },
+  //       { status: "Online" }
+  //     );
+
+  //     return res.json({ success: "Login successful", user, token });
+  //   } catch (error) {
+  //     console.error("Something went wrong", error);
+  //     return res.status(500).json({ error: "Internal server error" });
+  //   }
+  // }
   //edit user
   async edituser(req, res) {
     try {
@@ -215,7 +256,7 @@ class masteruser {
         b2b,
         community,
         reports,
-        paymentReport
+        paymentReport,
       } = req.body;
       let obj = {};
       // Check if the user exists
@@ -274,7 +315,6 @@ class masteruser {
       // }
       // Update category if provided
       if (typeof category !== "undefined") {
- 
         obj["category"] = category;
       }
 

@@ -390,6 +390,7 @@ function Dsrcallist() {
           >
             CLOSED OPERATION MANAGER
           </div>
+          <b>Double click for filter </b>
         </div>
       </div>
 

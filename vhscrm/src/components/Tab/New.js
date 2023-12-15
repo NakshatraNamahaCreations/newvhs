@@ -40,17 +40,16 @@ function Enquirynew() {
     if ((res.status = 200)) {
       const data = res.data?.enquiryadd;
 
-
-
-      const filteredData = data.filter((item) => item.enquiryFollow.length === 0);
-      setfilterdata(filteredData)
+      const filteredData = data.filter(
+        (item) => item.enquiryFollow.length === 0
+      );
+      setfilterdata(filteredData);
 
       setSearchResults(filteredData);
     }
   };
 
   const enquirydetail = (data) => {
-
     navigate(`/enquirydetail/${data?.EnquiryId}`);
   };
 
@@ -78,27 +77,21 @@ function Enquirynew() {
         results = results.filter(
           (item) =>
             item.name &&
-            item.name
-              .toLowerCase()
-              .includes(searchName.toLowerCase())
+            item.name.toLowerCase().includes(searchName.toLowerCase())
         );
       }
       if (searchContact) {
         results = results.filter(
           (item) =>
             item.contact1 &&
-            item.contact1
-              .toLowerCase()
-              .includes(searchContact.toLowerCase())
+            item.contact1.toLowerCase().includes(searchContact.toLowerCase())
         );
       }
       if (searchAddress) {
         results = results.filter(
           (item) =>
             item.address &&
-            item.address
-              .toLowerCase()
-              .includes(searchAddress.toLowerCase())
+            item.address.toLowerCase().includes(searchAddress.toLowerCase())
         );
       }
       if (searchReference) {
@@ -123,9 +116,7 @@ function Enquirynew() {
         results = results.filter(
           (item) =>
             item.city &&
-            item.city
-              .toLowerCase()
-              .includes(searchCity.toLowerCase())
+            item.city.toLowerCase().includes(searchCity.toLowerCase())
         );
       }
       if (searchInterest) {
@@ -248,7 +239,7 @@ function Enquirynew() {
           </div>
           <table>
             <thead>
-              <tr className="tr ">
+              <tr className="bg ">
                 <th scope="col">
                   <input className="vhs-table-input" />{" "}
                 </th>
@@ -259,9 +250,13 @@ function Enquirynew() {
                     onChange={(e) => setSearchCatagory(e.target.value)}
                   >
                     <option value="">Select</option>
-                    {searchResults.map((e) => (
-                      <option value={e.category} key={e.category}>
-                        {e.category}{" "}
+                    {[
+                      ...new Set(
+                        filterdata?.map((category) => category.category)
+                      ),
+                    ].map((uniquecategory) => (
+                      <option value={uniquecategory} key={uniquecategory}>
+                        {uniquecategory}
                       </option>
                     ))}
                   </select>{" "}
@@ -310,14 +305,13 @@ function Enquirynew() {
                     onChange={(e) => setSearchCity(e.target.value)}
                   >
                     <option value="">Select </option>
-                    {searchResults.map((e) => (
-                      <option
-                        value={e.city}
-                        key={e.city}
-                      >
-                        {e.city}{" "}
-                      </option>
-                    ))}
+                    {[...new Set(filterdata?.map((city) => city.city))].map(
+                      (uniquecity) => (
+                        <option value={uniquecity} key={uniquecity}>
+                          {uniquecity}
+                        </option>
+                      )
+                    )}
                   </select>{" "}
                 </th>
 

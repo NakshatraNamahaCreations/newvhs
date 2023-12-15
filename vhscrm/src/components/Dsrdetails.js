@@ -810,7 +810,7 @@ function Dsrdetails() {
                     <select
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => setnewcity(e.target.value)}
-                      defaultValue={data.city}
+                      defaultValue={data?.city}
                     >
                       <option>{data.city}</option>
                       {citydata?.map((data, index) => (

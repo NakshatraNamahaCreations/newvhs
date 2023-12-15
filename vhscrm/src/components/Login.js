@@ -39,6 +39,32 @@ function Login() {
     }
   };
 
+  // const Login = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const config = {
+  //       url: "/master/loginuser",
+  //       method: "post",
+  //       baseURL: apiURL,
+  //       headers: { "content-type": "application/json" },
+  //       data: { loginnameOrEmail: emailOrName, password: password },
+  //     };
+  //     const response = await axios(config);
+
+  //     if (response.status === 200) {
+  //       // Store the JWT token in localStorage
+  //       localStorage.setItem("token", response.data.token);
+
+  //       // Redirect to the home page
+  //       window.location.assign("/home");
+  //     } else {
+  //       alert(response.data.error);
+  //     }
+  //   } catch (error) {
+  //     alert("Invalid email and password");
+  //   }
+  // };
+
   return (
     <div>
       <div

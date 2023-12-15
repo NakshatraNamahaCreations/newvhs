@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../layout/Header";
-import { Link } from "react-router-dom";
-import Button from "react-bootstrap/Button";
+
 import Modal from "react-bootstrap/Modal";
 import Nav from "../Nav1";
 import axios from "axios";
@@ -43,7 +42,9 @@ function Technician() {
   const [selectedCatagory, setSelectedCatagory] = useState(
     data?.category || []
   );
-  const [selectedCatagory1, setSelectedCatagory1] = useState([]);
+  const [selectedCatagory1, setSelectedCatagory1] = useState(
+    data?.category || []
+  );
 
   const [techniciandata, settechniciandata] = useState([]);
   const [citydata, setcitydata] = useState([]);
@@ -57,10 +58,6 @@ function Technician() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
-
-
-
 
   const addtechnician = async (e) => {
     e.preventDefault();
@@ -219,16 +216,9 @@ function Technician() {
   ];
   const edit = (data) => {
     setdata(data);
-    setSelectedCatagory1(data.category)
+    setSelectedCatagory1(data.category);
     handleShow();
   };
-  // useEffect(() => {
-  //   const result = techniciandata.filter((item) => {
-  //     return item.vhsname.toLowerCase().match(search.toLowerCase());
-  //   });
-  //   setfilterdata(result);
-  // }, [search]);
-
 
   useEffect(() => {
     const filteredData = techniciandata.filter((item) => {
@@ -236,18 +226,14 @@ function Technician() {
       const vhsname = item.vhsname?.toLowerCase().includes(searchString);
       const smsname = item.smsname?.toLowerCase().includes(searchString);
       const number = item.number?.toLowerCase().includes(searchString);
-      const Type =
-        item.Type?.toLowerCase().includes(searchString);
-      const city = item.city
-        ?.toLowerCase()
-        .includes(searchString);
-      
-      return vhsname ||smsname || Type || city ||number;
+      const Type = item.Type?.toLowerCase().includes(searchString);
+      const city = item.city?.toLowerCase().includes(searchString);
+
+      return vhsname || smsname || Type || city || number;
     });
 
     setfilterdata(filteredData);
   }, [search, techniciandata]);
-
 
   const edittechnician = async (e) => {
     e.preventDefault();
@@ -259,7 +245,7 @@ function Technician() {
         headers: { "content-type": "application/json" },
         data: {
           Type: Type1,
-          category: selectedCatagory,
+          category: selectedCatagory1,
           vhsname: vh,
           smsname: smsname1,
           number: number1,
@@ -284,7 +270,7 @@ function Technician() {
   const onSelectCatagory = (selectedList, selectedItem) => {
     // Handle select event
     setcategory1(selectedList);
-    console.log(selectedList)
+    console.log(selectedList);
   };
 
   const onEditCatagory = (selectedList, selectedItem) => {
@@ -421,7 +407,6 @@ function Technician() {
                     <div className="group pt-1">
                       <input
                         type="text"
-                      
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setlanguagesknow(e.target.value)}
                       />
@@ -488,7 +473,7 @@ function Technician() {
           </div>
         </div>
       </div>
-{/* ============================================ edit ======================================================================= */}
+      {/* ============================================ edit ======================================================================= */}
       <Modal
         show={show}
         onHide={handleClose}
@@ -539,14 +524,9 @@ function Technician() {
                   <div className="col-md-4">
                     <Multiselect
                       className="mt-3"
-                      options={
-                        
-                        data.category?.map((category) => ({
+                      options={admin.category.map((category) => ({
                         name: category.name,
-                      }))
-                    
-                      
-                    }
+                      }))}
                       selectedValues={selectedCatagory1}
                       onSelect={onEditCatagory}
                       onRemove={onRemoveCatagory}

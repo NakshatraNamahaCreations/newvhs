@@ -40,7 +40,6 @@ function Services() {
     let res = await axios.get(apiURL + "/getcategory");
     if ((res.status = 200)) {
       setCategoryData(res.data?.category);
-
     }
   };
 
@@ -73,12 +72,6 @@ function Services() {
         method: "put",
         baseURL: apiURL,
         headers: { "content-type": "application/json" },
-        // data: { categoryName: categoryName, subcategoryName: subcategoryName },
-        // data: {
-        //   category: category,
-        //   subcategory: subcategory,
-        //   videolink: videolink,
-        // },
         data: {
           category: category,
           serviceName: serivceName,
@@ -102,7 +95,7 @@ function Services() {
     if (res.status === 200) {
       console.log(res);
       const getVideoLinkData = res.data.service.filter((e) => e.videoLink);
-   
+
       setsubcategorydata(getVideoLinkData);
       setfilterdata(getVideoLinkData);
     }
@@ -249,7 +242,7 @@ function Services() {
                         <option>---SELECT---</option>
                         {serviceData.map((item) => (
                           <option key={item.id} value={item._id}>
-                           {item.Subcategory} -  {item.serviceName}
+                            {item.Subcategory} - {item.serviceName}
                           </option>
                         ))}
                       </select>

@@ -73,13 +73,11 @@ function Home() {
     let res = await axios.get(apiURL + "/getcustomer");
     if (res.status === 200) {
       setCustomer(res.data?.customers);
-    
     }
   };
   const getEnquiry = async () => {
     let res = await axios.get(apiURL + "/getenquiry");
     if (res.status === 200) {
-    
       setEnquiry(res.data?.enquiryadd);
     }
   };
@@ -87,8 +85,6 @@ function Home() {
   const getService = async () => {
     let res = await axios.get(apiURL + "/getservicedetails");
     if (res.status === 200) {
-
-      console.log("res.data?.servicedetails",res.data?.servicedetails)
       setService(res.data?.servicedetails);
     }
   };
@@ -96,7 +92,6 @@ function Home() {
   const getEnquiryFollowup = async () => {
     let res = await axios.get(apiURL + "/getcalllateraggredata");
     if (res.status === 200) {
-
       setEnquiryFollowup(res.data?.enquiryfollowup);
     }
   };
@@ -123,28 +118,10 @@ function Home() {
   const enquiryFollowUpNotInterested = enquiryFollowup.filter(
     (item) => item.response === "Not Intrested"
   );
-  // console.log("enquiryFollowUpCallLater", enquiryFollowUpCallLater.length);
-  // console.log(
-  //   "enquiryFollowUpCurrentDateLength",
-  //   enquiryFollowUpCurrentDateLength.length
-  // );
 
-
-
-  
   return (
     <div className="web">
       <Header />
-
-      {/* <div className="row m-auto mt-2">
-        <div className="col-md-12">
-          <div className="card sticky">
-            <div className="card-body">
-              <div>User > Home</div>
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       <div className="row m-auto mt-3">
         <div className="col-md-3">

@@ -20,6 +20,7 @@ router.post(
   servicedetailscontroller.addservicedetails
 );
 router.get("/getservicedetails", servicedetailscontroller.getservicedetails);
+
 router.post(
   "/deleteservicedetails/:id",
   servicedetailscontroller.deleteservicedetails
@@ -33,10 +34,7 @@ router.post("/updatepaymentmode/:id", servicedetailscontroller.updatepayment);
 router.post("/postservicecategory", servicedetailscontroller.postcategory);
 router.post("/closeproject/:id", servicedetailscontroller.updateclose);
 router.post("/postservicecat", servicedetailscontroller.postservicecategory);
-router.post(
-  "/postservicecatdevideddates",
-  servicedetailscontroller.getDevidedate
-);
+
 router.post(
   "/postservicecatdevideddatesnew",
   servicedetailscontroller.getDevidedatenew
