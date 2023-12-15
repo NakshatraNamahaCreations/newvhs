@@ -4,11 +4,11 @@ import Customernav from "../Customernav";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Link, useNavigate } from "react-router-dom";
-
+import { debounce } from "lodash";
 function Customersearch() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [customername, setcustomername] = useState("");
   const [maincontact, setmaincontact] = useState("");
   const [city, setcity] = useState("");
@@ -35,25 +35,23 @@ function Customersearch() {
     let res = await axios.get(apiURL + "/getcustomer");
     if (res.status === 200) {
       setcustomerdata(res.data?.customers);
-      
     }
   };
 
-
-
-
   const filterData = async () => {
+    console.log("enters");
     try {
       const response = await axios.get(apiURL + "/searchcustomer", {
         params: {
           customername,
           city,
           customertype,
-          maincontact
-        }
+          maincontact,
+        },
       });
-  
+
       if (response.status === 200) {
+        console.log("adgashdgas", response.data?.customers);
         setfilterdata(response.data?.customers);
         setHasResults(response.data?.customers.length > 0);
       } else {
@@ -63,13 +61,12 @@ function Customersearch() {
       // Handle error
     }
   };
- 
-  
-
+  const debouncedFilterData = debounce(filterData, 300);
   const handleSearchClick = (e) => {
     e.preventDefault();
     setSearchClicked(true);
     filterData();
+    debouncedFilterData();
   };
 
   const columns = [
@@ -97,10 +94,13 @@ function Customersearch() {
       name: "Address",
       cell: (row) => (
         <div>
-
-          <p>{row.rbhf}{row.cnap}{row.lnf}</p>
+          <p>
+            {row.rbhf}
+            {row.cnap}
+            {row.lnf}
+          </p>
         </div>
-      )
+      ),
     },
     {
       name: "City",
@@ -124,16 +124,20 @@ function Customersearch() {
     // },
   ];
 
-  
-
   const handleRowClick = (row) => {
-    navigate(`/customersearchdetails/${row._id}`);
+    const queryString = new URLSearchParams({
+      rowData: JSON.stringify(row),
+    }).toString();
+    const newTab = window.open(
+      `/customersearchdetails/${row._id}?${queryString}`,
+      "_blank"
+    );
   };
-  
+
   return (
     <div className="web">
       <Header />
-      <Customernav  />
+      <Customernav />
 
       <div className="row m-auto">
         <div className="col-md-12">

@@ -864,43 +864,43 @@ function Paymentfilterlist() {
     }
   };
 
-  // useEffect(() => {
-  //   filterData();
-  // }, [
-  //   city,
-  //   searchCustomerName,
-  //   // searchTechName,
-  //   searchContact,
-  //   searchJobType,
-  //   searchDesc,
-  // ]);
+  useEffect(() => {
+    filterData();
+  }, [
+    city,
+    searchCustomerName,
+    // searchTechName,
+    searchContact,
+    searchJobType,
+    searchDesc,
+  ]);
 
-  // const filterData = async () => {
-  //   try {
-  //     const response = await axios.get(apiURL + "/serchfilterinpaymentrepots", {
-  //       params: {
-  //         city,
-  //         searchCustomerName,
-  //         searchContact,
-  //         date,
-  //         searchAddress,
-  //         searchJobType,
-  //         searchDesc,
+  const filterData = async () => {
+    try {
+      const response = await axios.get(apiURL + "/serchfilterinpaymentrepots", {
+        params: {
+          city,
+          searchCustomerName,
+          searchContact,
+          date,
+          searchAddress,
+          searchJobType,
+          searchDesc,
 
-  //         // searchTechName,
-  //       },
-  //     });
+          // searchTechName,
+        },
+      });
 
-  //     if (response.status === 200) {
-  //       setSearchResults(response.data?.runningdata);
-  //       settreatmentData(response.data?.runningdata);
-  //     } else {
-  //       // Handle error
-  //     }
-  //   } catch (error) {
-  //     // Handle error
-  //   }
-  // };
+      if (response.status === 200) {
+        setSearchResults(response.data?.runningdata);
+        settreatmentData(response.data?.runningdata);
+      } else {
+        // Handle error
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
 
   useEffect(() => {
     getAlldata();

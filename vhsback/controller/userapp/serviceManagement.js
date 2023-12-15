@@ -28,8 +28,6 @@ class serviceManagement {
       rating,
     } = req.body;
 
-
-
     const parsedServiceDesc = JSON.parse(serviceDesc);
 
     const parsedServiceExcludes = JSON.parse(serviceExcludes);
@@ -38,8 +36,6 @@ class serviceManagement {
     let file1 = req.files[1]?.filename;
     let file2 = req.files[2]?.filename;
     let file3 = req.files[3]?.filename;
-
-
 
     let add = new serviceManagementModel({
       serviceImg: file,
@@ -125,7 +121,6 @@ class serviceManagement {
 
       return res.json({ success: true, data: updatedData });
     } catch (error) {
-   
       return res.status(500).json({ success: false, message: "Server error" });
     }
   }
@@ -222,9 +217,6 @@ class serviceManagement {
       let file2 = req.files[2]?.filename;
       let file3 = req.files[3]?.filename;
 
-
-
-
       const findService = await serviceManagementModel.findOne({
         _id: serviceId,
       });
@@ -280,7 +272,6 @@ class serviceManagement {
       if (file3) {
         findService.Eximg = file3;
       }
-     
 
       const updateCategory = await serviceManagementModel.findOneAndUpdate(
         { _id: serviceId },
@@ -388,7 +379,7 @@ class serviceManagement {
   //   try {
   //     let service = await serviceManagementModel.find({}).sort({ _id: -1 });
   //     if (service) {
-   
+
   //       return res.status(200).json({ service: service });
   //     } else {
   //       return res.status(404).json({ message: 'No services found.' });
@@ -397,38 +388,42 @@ class serviceManagement {
   //     return res.status(500).json({ message: 'Internal server error.', error: error.message });
   //   }
   // }
-  
 
-  async  getserviceManagement(req, res) {
+  async getserviceManagement(req, res) {
     try {
       const PAGE_SIZE = 10; // Define the number of records to send in each batch
       let pageNumber = parseInt(req.query.pageNumber) || 1; // Get the requested page number
-  
+
       // Calculate the skip value based on the page number and page size
       const skip = (pageNumber - 1) * PAGE_SIZE;
-  
+
       // Fetch a batch of service data based on pagination
-      let service = await serviceManagementModel.find({})
+      let service = await serviceManagementModel
+        .find({})
         .sort({ _id: -1 })
         .skip(skip)
         .limit(PAGE_SIZE);
-  
+
       if (service.length > 0) {
         // Emulate delay before sending data (2-3 seconds in this case)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-  
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
         // Return the batch of service data
         return res.status(200).json({
           pageNumber: pageNumber,
           pageSize: PAGE_SIZE,
           totalServices: await serviceManagementModel.countDocuments({}),
-          service: service
+          service: service,
         });
       } else {
-        return res.status(404).json({ message: 'No services found for the given page.' });
+        return res
+          .status(404)
+          .json({ message: "No services found for the given page." });
       }
     } catch (error) {
-      return res.status(500).json({ message: 'Internal server error.', error: error.message });
+      return res
+        .status(500)
+        .json({ message: "Internal server error.", error: error.message });
     }
   }
 
@@ -454,8 +449,6 @@ class serviceManagement {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }
-  
-  
 
   async getserviceNameManagement(req, res) {
     try {
@@ -474,7 +467,7 @@ class serviceManagement {
   async getserviceDirection(req, res) {
     try {
       let services = await serviceManagementModel
-        .findOne({ serviceDirection})
+        .findOne({ serviceDirection })
         .sort({ _id: -1 });
       if (services) {
         return res.json({ services: services });
@@ -507,7 +500,6 @@ class serviceManagement {
       return res.json({ categorydata: data });
     }
   }
-
 
   async deletebyindex(req, res) {
     const { serviceId, storeSlotId } = req.params;

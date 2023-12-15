@@ -6,6 +6,7 @@ import Customernav from "../components/Customernav";
 import moment from "moment";
 import { Button, Modal, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
+import { Category } from "@material-ui/icons";
 
 function Customersearchdetails() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
@@ -39,7 +40,6 @@ function Customersearchdetails() {
   const [whatsappTemplate, setWhatsappTemplate] = useState("");
   const [whatsappdata, setwhatsappdata] = useState([]);
   const [customerAddressdata, setcustomerAddressdata] = useState([]);
-  const [newCharge, setnewCharge] = useState("");
 
   const [houseNumber, setHouseNumber] = useState("");
   const [streetName, setStreetName] = useState("");
@@ -68,6 +68,16 @@ function Customersearchdetails() {
     setcategory(e.target.value);
   };
 
+  console.log("category-------", category);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const rowDataString = urlParams.get("rowData");
+    const rowData = JSON.parse(rowDataString);
+    setcustomerdata(rowData);
+    // Use rowData in your component
+    console.log("rowData", rowData);
+  }, [id]);
+
   const handleAddressSelect = (address) => {
     setSelectedAddress(address);
     setCaddres("");
@@ -83,14 +93,14 @@ function Customersearchdetails() {
       address: item.lnf,
       landmark: item.cnap,
       platNo: item.rbhf,
-      userId: customerdata[0]._id,
+      userId: customerdata?._id,
     });
     console.log(
       "selectedAddress11",
       item.lnf,
       item.cnap,
       item.rbhf,
-      customerdata[0]._id
+      customerdata?._id
     );
   };
 
@@ -100,23 +110,9 @@ function Customersearchdetails() {
       address: item.lnf,
       landmark: item.cnap,
       platNo: item.rbhf,
-      userId: customerdata[0]._id,
+      userId: customerdata?._id,
     });
   };
-
-  useEffect(() => {
-    const getcustomer = async () => {
-      try {
-        let res = await axios.get(apiURL + `/getCustomerById/${id}`);
-        if (res.status === 200) {
-          setcustomerdata([res.data?.customer]);
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    getcustomer();
-  }, [id]);
 
   useEffect(() => {
     const getcategory = async () => {
@@ -132,42 +128,43 @@ function Customersearchdetails() {
     getcategory();
   }, []);
 
-  useEffect(() => {
-    const getsubcategory = async () => {
-      try {
-        let res = await axios.post(apiURL + `/postsubcategory/`, { category });
-        if ((res.status = 200)) {
-          setservicedata(res.data?.subcategory);
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    getsubcategory();
-  }, [category]);
+  // useEffect(() => {
+  //   const getsubcategory = async () => {
+  //     try {
+  //       let res = await axios.post(apiURL + `/postsubcategory/`, { category });
+  //       if ((res.status = 200)) {
+  //         setservicedata(res.data?.subcategory);
+  //       }
+  //     } catch (error) {
+  //       console.log("error", error);
+  //     }
+  //   };
+  //   getsubcategory();
+  // }, [category]);
 
   useEffect(() => {
-    const getServicebyCategory = async () => {
-      try {
-        let res = await axios.post(apiURL + `/userapp/getservicebycategory/`, {
-          category,
-        });
-        if (res.status === 200) {
-          // console.log("service details by category", res.data);
-          setServiceDetails(res.data?.serviceData);
-          if (res.data?.serviceData.length > 0) {
-            setServiceId(res.data.serviceData[0]._id);
-          } else {
-            setServiceSlots([]);
-          }
-        }
-      } catch (error) {
-        console.log("Error", error);
-      }
-    };
-
     getServicebyCategory();
   }, [category]);
+
+  const getServicebyCategory = async () => {
+    console.log("category poted ----", category);
+    try {
+      let res = await axios.post(apiURL + `/userapp/getservicebycategory/`, {
+        category,
+      });
+      if (res.status === 200) {
+        console.log("categoty potsed data--", res.data?.serviceData);
+        setServiceDetails(res.data?.serviceData);
+        if (res.data?.serviceData.length > 0) {
+          setServiceId(res.data.serviceData[0]._id);
+        } else {
+          setServiceSlots([]);
+        }
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
 
   useEffect(() => {
     const getSlotsByService = async () => {
@@ -187,33 +184,6 @@ function Customersearchdetails() {
       getSlotsByService();
     }
   }, [serviceId]);
-
-  useEffect(() => {
-    const gettreatment = async () => {
-      try {
-        let res = await axios.get(apiURL + `/mybookusingID/${id}`);
-        if (res.status === 200) {
-          const filteredData = res.data?.bookings;
-          filteredData.forEach((item) => {
-            const oneCommunity = parseInt(item.oneCommunity);
-            const serviceCharge = parseInt(item.serviceCharge);
-
-            if (!isNaN(oneCommunity) && !isNaN(serviceCharge)) {
-              const totalCharge = serviceCharge - oneCommunity;
-              item.dividedCharges = totalCharge;
-              setnewCharge(item.dividedCharges);
-            } else {
-            }
-          });
-
-          settreatmentdata(filteredData);
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    gettreatment();
-  }, []);
 
   useEffect(() => {
     getAlldata();
@@ -359,19 +329,19 @@ function Customersearchdetails() {
           headers: { "content-type": "application/json" },
           data: {
             customerData: {
-              _id: customerdata[0]?._id,
-              EnquiryId: customerdata[0]?.EnquiryId,
-              customerName: customerdata[0]?.customerName,
-              category: customerdata[0]?.category,
-              mainContact: customerdata[0]?.mainContact,
-              email: customerdata[0]?.email,
-              approach: customerdata[0]?.approach,
+              _id: customerdata?._id,
+              EnquiryId: customerdata?.EnquiryId,
+              customerName: customerdata?.customerName,
+              category: customerdata?.category,
+              mainContact: customerdata?.mainContact,
+              email: customerdata?.email,
+              approach: customerdata?.approach,
             },
             dividedDates: dividedDates,
             dividedamtDates: dividedamtDates,
             dividedamtCharges: dividedamtCharges,
             dCategory: category,
-            userId: customerdata[0]._id,
+            userId: customerdata?._id,
             category: category,
             contractType: contractType,
             service: treatment,
@@ -379,13 +349,13 @@ function Customersearchdetails() {
             serviceID: serviceId,
             slots: selectedSlot,
             selectedSlotText: selectedSlot,
-            EnquiryId: customerdata[0]?.EnquiryId,
+            EnquiryId: customerdata?.EnquiryId,
             serviceCharge: serviceCharge,
             dateofService: dateofService,
             deliveryAddress: !newAdd
               ? selectedAddress
               : {
-                  userId: customerdata[0]?._id,
+                  userId: customerdata?._id,
                   address: Address,
                   saveAs: streetName,
                   landmark: landmark,
@@ -393,11 +363,11 @@ function Customersearchdetails() {
                   platNo: houseNumber,
                 },
             desc: desc,
-            city: customerdata[0].city,
+            city: customerdata?.city,
             serviceFrequency: serviceFrequency,
             startDate: dateofService,
             expiryDate: expiryDate,
-            type: customerdata[0]?.approach,
+            type: customerdata?.approach,
             firstserviceDate: firstserviceDate,
             date: moment().format("YYYY-MM-DD"),
             time: moment().format("LT"),
@@ -410,11 +380,11 @@ function Customersearchdetails() {
         // if (whatsappdata.length > 0) {
         // Assuming you want the first item from whatsappdata for the API call
         // const selectedResponse = whatsappdata[0];
-        // makeApiCall(selectedResponse, customerdata[0]?.mainContact);
+        // makeApiCall(selectedResponse, customerdata?.mainContact);
 
         await axios(config).then(function (response) {
           if (response.status === 200) {
-            alert("Added");
+            gettreatment();
             window.location.reload("");
           }
         });
@@ -429,6 +399,33 @@ function Customersearchdetails() {
       }
     }
   };
+
+  const gettreatment = async () => {
+    try {
+      let res = await axios.get(apiURL + `/mybookusingID/${id}`);
+      if (res.status === 200) {
+        // const filteredData = res.data?.bookings;
+        // filteredData.forEach((item) => {
+        //   const oneCommunity = parseInt(item.oneCommunity);
+        //   const serviceCharge = parseInt(item.serviceCharge);
+
+        //   if (!isNaN(oneCommunity) && !isNaN(serviceCharge)) {
+        //     const totalCharge = serviceCharge - oneCommunity;
+        //     item.dividedCharges = totalCharge;
+        //     // setnewCharge(item.dividedCharges);
+        //   } else {
+        //   }
+        // });
+
+        settreatmentdata(res.data?.bookings);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  useEffect(() => {
+    gettreatment();
+  }, [id]);
 
   const deleteservicedeatils = async (id) => {
     axios({
@@ -454,9 +451,9 @@ function Customersearchdetails() {
         baseURL: apiURL,
         headers: { "content-type": "application/json" },
         data: {
-          customerData: customerdata[0],
+          customerData: [customerdata],
 
-          userId: customerdata[0]._id,
+          userId: customerdata?._id,
           category: category,
 
           service: treatment,
@@ -486,7 +483,7 @@ function Customersearchdetails() {
   };
 
   const addcustomeraddresss = async (e) => {
-    if (!Address || !customerdata[0]?._id || !landmark || !streetName) {
+    if (!Address || !customerdata?._id || !landmark || !streetName) {
       alert("Please fill neccesary fields");
     } else {
       try {
@@ -496,7 +493,7 @@ function Customersearchdetails() {
           baseURL: "https://api.vijayhomeservicebengaluru.in/api",
           headers: { "content-type": "application/json" },
           data: {
-            userId: customerdata[0]?._id,
+            userId: customerdata?._id,
             address: Address,
             saveAs: streetName,
             landmark: landmark,
@@ -526,8 +523,8 @@ function Customersearchdetails() {
   };
 
   useEffect(() => {
-    if (customerdata && customerdata[0]?._id) {
-      getaddress(customerdata[0]._id);
+    if (customerdata && customerdata?._id) {
+      getaddress(customerdata?._id);
     }
   }, [customerdata]); // Update the dependency array based on your requirements
 
@@ -580,7 +577,7 @@ function Customersearchdetails() {
 
     const content = contentTemplate.replace(
       /\{Customer_name\}/g,
-      customerdata[0]?.customerName
+      customerdata?.customerName
     );
     const serviceName = content.replace(/\{Service_name\}/g, treatment);
     const slotTiming = serviceName.replace(/\{Slot_timing\}/g, selectedSlot);
@@ -642,111 +639,110 @@ function Customersearchdetails() {
           <div className="card" style={{ marginTop: "20px" }}>
             <div className="card-body p-4">
               <form>
-                {customerdata.map((item) => (
-                  <div>
-                    <div className="row">
-                      <div className="col-md-4 pt-2">
-                        <div className="vhs-sub-heading">
-                          <b>Customer Name :</b>
-                        </div>
-                        <div
-                          className="group p-2"
-                          style={{
-                            outline: "none",
-                            border: "1px solid #eee",
-                            borderRadius: "3px",
-                            borderLeft: "2px solid #a9042e",
-                            backgroundColor: "#d6d6d6",
-                          }}
-                        >
-                          {item.customerName}{" "}
-                        </div>
+                <div>
+                  <div className="row">
+                    <div className="col-md-4 pt-2">
+                      <div className="vhs-sub-heading">
+                        <b>Customer Name :</b>
                       </div>
-
-                      <div className="col-md-4 pt-2">
-                        <div className="vhs-sub-heading">
-                          <b>Mobile No : </b>
-                        </div>
-                        <div
-                          className="group p-2"
-                          style={{
-                            outline: "none",
-                            border: "1px solid #eee",
-                            borderRadius: "3px",
-                            borderLeft: "2px solid #a9042e",
-                            backgroundColor: "#d6d6d6",
-                          }}
-                        >
-                          {item.mainContact}
-                        </div>
+                      <div
+                        className="group p-2"
+                        style={{
+                          outline: "none",
+                          border: "1px solid #eee",
+                          borderRadius: "3px",
+                          borderLeft: "2px solid #a9042e",
+                          backgroundColor: "#d6d6d6",
+                        }}
+                      >
+                        {customerdata?.customerName}{" "}
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-4 pt-2">
-                        <div className="vhs-sub-heading">
-                          <b>Email : </b>
-                        </div>
-                        <div
-                          className="group p-2"
-                          style={{
-                            outline: "none",
-                            border: "1px solid #eee",
-                            borderRadius: "3px",
-                            borderLeft: "2px solid #a9042e",
-                            backgroundColor: "#d6d6d6",
-                          }}
-                        >
-                          {item.email}
-                        </div>
-                      </div>
 
-                      <div className="col-md-4 pt-2">
-                        <div className="vhs-sub-heading">
-                          <b>Address : </b>
-                        </div>
-                        <div
-                          className="group p-2"
-                          style={{
-                            outline: "none",
-                            border: "1px solid #eee",
-                            borderRadius: "3px",
-                            borderLeft: "2px solid #a9042e",
-                            backgroundColor: "#d6d6d6",
-                          }}
-                        >
-                          {item.rbhf},{item.cnap},{item.lnf}
-                        </div>
-                        <div style={{ fontSize: "12px" }}>
-                          <b style={{ cursor: "pointer" }} onClick={handleShow}>
-                            Add Delivery Address
-                          </b>{" "}
-                          <b
-                            className="ms-2"
-                            style={{ cursor: "pointer" }}
-                            onClick={handleShow1}
-                          >
-                            View Delivery Address
-                          </b>
-                        </div>
+                    <div className="col-md-4 pt-2">
+                      <div className="vhs-sub-heading">
+                        <b>Mobile No : </b>
                       </div>
-                      <div className="col-md-4 pt-2">
-                        <Link to="/customeredit" state={{ data: item }}>
-                          <button
-                            className="px-3 py-1"
-                            style={{
-                              border: "none",
-                              borderRadius: "3px",
-                              backgroundColor: "#a9042e",
-                              color: "white",
-                            }}
-                          >
-                            Edit
-                          </button>
-                        </Link>
+                      <div
+                        className="group p-2"
+                        style={{
+                          outline: "none",
+                          border: "1px solid #eee",
+                          borderRadius: "3px",
+                          borderLeft: "2px solid #a9042e",
+                          backgroundColor: "#d6d6d6",
+                        }}
+                      >
+                        {customerdata?.mainContact}
                       </div>
                     </div>
                   </div>
-                ))}
+                  <div className="row">
+                    <div className="col-md-4 pt-2">
+                      <div className="vhs-sub-heading">
+                        <b>Email : </b>
+                      </div>
+                      <div
+                        className="group p-2"
+                        style={{
+                          outline: "none",
+                          border: "1px solid #eee",
+                          borderRadius: "3px",
+                          borderLeft: "2px solid #a9042e",
+                          backgroundColor: "#d6d6d6",
+                        }}
+                      >
+                        {customerdata?.email}
+                      </div>
+                    </div>
+
+                    <div className="col-md-4 pt-2">
+                      <div className="vhs-sub-heading">
+                        <b>Address : </b>
+                      </div>
+                      <div
+                        className="group p-2"
+                        style={{
+                          outline: "none",
+                          border: "1px solid #eee",
+                          borderRadius: "3px",
+                          borderLeft: "2px solid #a9042e",
+                          backgroundColor: "#d6d6d6",
+                        }}
+                      >
+                        {customerdata?.rbhf},{customerdata?.cnap},
+                        {customerdata?.lnf}
+                      </div>
+                      <div style={{ fontSize: "12px" }}>
+                        <b style={{ cursor: "pointer" }} onClick={handleShow}>
+                          Add Delivery Address
+                        </b>{" "}
+                        <b
+                          className="ms-2"
+                          style={{ cursor: "pointer" }}
+                          onClick={handleShow1}
+                        >
+                          View Delivery Address
+                        </b>
+                      </div>
+                    </div>
+                    <div className="col-md-4 pt-2">
+                      <Link to="/customeredit" state={{ data: customerdata }}>
+                        <button
+                          className="px-3 py-1"
+                          style={{
+                            border: "none",
+                            borderRadius: "3px",
+                            backgroundColor: "#a9042e",
+                            color: "white",
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </form>
             </div>
 
@@ -1021,7 +1017,7 @@ function Customersearchdetails() {
                         <option>--select--</option>
                         {serviceSlots
                           ?.filter(
-                            (slot) => slot.slotCity === customerdata[0]?.city // Filter based on city match
+                            (slot) => slot.slotCity === customerdata?.city // Filter based on city match
                           )
                           .map((slot, index) => (
                             <option key={index} value={`${slot.startTime}`}>
@@ -1217,7 +1213,7 @@ function Customersearchdetails() {
                         <option>{editenable.selectedSlotText}</option>
                         {serviceSlots
                           ?.filter(
-                            (slot) => slot.slotCity === customerdata[0]?.city // Filter based on city match
+                            (slot) => slot.slotCity === customerdata?.city // Filter based on city match
                           )
                           .map((slot, index) => (
                             <option key={index} value={`${slot.startTime}`}>
@@ -1552,21 +1548,7 @@ function Customersearchdetails() {
                 />
               </div>
             </div>
-            {/* <div className="col-md-4 pt-3">
-              <div className="vhs-input-label">City</div>
-              <div className="group pt-1">
-                <select
-                  className="col-md-12 vhs-input-value"
-                  onChange={(e) => setCity(e.target.value)}
-                >
-                
-                  <option value="">Select</option>
-                  {admin?.city.map((item) => (
-                    <option defaultValue={item.name}>{item.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div> */}
+
             <div className="col-md-8 pt-3">
               <div className="vhs-input-label">Address</div>
               <div className="group pt-1">
@@ -1600,27 +1582,25 @@ function Customersearchdetails() {
         </Modal.Header>
         <Modal.Body>
           <div className="row px-3">
-            {customerdata[0]?.lnf ? (
-              customerdata.map((item, index) => (
-                <div key={index}>
-                  <div
-                    className="col-md-12 d-flex"
-                    onClick={() => handleRowClick1(item)}
-                  >
-                    <div className="mt-2">
-                      <input
-                        type="radio"
-                        checked={Caddres === item}
-                        onChange={() => handleAddressSelect1(item)}
-                        style={{ width: 40, fontSize: "20px", height: "20px" }}
-                      />
-                    </div>
-                    <div className="d-flex">
-                      {`${item.rbhf}, ${item.cnap}, ${item.lnf}`}
-                    </div>
+            {customerdata?.lnf ? (
+              <div>
+                <div
+                  className="col-md-12 d-flex"
+                  onClick={() => handleRowClick1(customerdata)}
+                >
+                  <div className="mt-2">
+                    <input
+                      type="radio"
+                      checked={Caddres === customerdata}
+                      onChange={() => handleAddressSelect1(customerdata)}
+                      style={{ width: 40, fontSize: "20px", height: "20px" }}
+                    />
+                  </div>
+                  <div className="d-flex">
+                    {`${customerdata?.rbhf}, ${customerdata?.cnap}, ${customerdata?.lnf}`}
                   </div>
                 </div>
-              ))
+              </div>
             ) : (
               <></>
             )}

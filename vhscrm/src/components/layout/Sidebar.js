@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { NavLink } from "react-router-dom";
 
 const Sidebar = ({ children }) => {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
 
-  const [isOpen, setIsOpen] = useState(true);
+  // Load isOpen state from sessionStorage or default to true
+  const [isOpen, setIsOpen] = useState(
+    JSON.parse(sessionStorage.getItem("sidebarOpen")) ?? true
+  );
+
+  // Save isOpen state to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem("sidebarOpen", JSON.stringify(isOpen));
+  }, [isOpen]);
+
   const toggle = () => setIsOpen(!isOpen);
 
   const menuItem = [
@@ -96,6 +105,7 @@ const Sidebar = ({ children }) => {
       name: "Payment Reports",
     });
   }
+
   if (admin && admin.b2b === true) {
     menuItem.push({
       path: "/b2badd",
@@ -128,17 +138,9 @@ const Sidebar = ({ children }) => {
             <h1 style={{ display: isOpen ? "block" : "none" }} className="logo">
               Vijay Home Services
             </h1>
-            {/* <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className="bars">
-            <FaBars onClick={toggle} />
-          </div> */}
           </div>
           {menuItem.map((item, index) => (
-            <NavLink
-              to={item.path}
-              key={index}
-              className="link"
-              // activeclassName="active"
-            >
+            <NavLink to={item.path} key={index} className="link">
               <div className="icon">{item.icon}</div>
               <div
                 style={{ display: isOpen ? "block" : "none" }}

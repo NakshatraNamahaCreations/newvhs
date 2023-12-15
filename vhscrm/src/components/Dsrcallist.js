@@ -48,6 +48,7 @@ function Dsrcallist() {
         const allData = res.data?.runningdata;
         setTotalPages(res.data?.totalLength);
 
+        console.log("res.data?.totalLength", res.data?.totalLength);
         // Update state with filtered results
         setSearchResults(allData);
         settreatmentData(allData);

@@ -121,7 +121,7 @@ function DSRcategory() {
     const newdates = item.dividedDates;
 
     newdates.forEach((newdate) => {
-      const formattedDate = moment(newdate.date).format("YYYY-MM-DD");
+      const formattedDate = new Date(newdate.date).toISOString().split("T")[0];
       counts[formattedDate] = (counts[formattedDate] || 0) + 1;
     });
 

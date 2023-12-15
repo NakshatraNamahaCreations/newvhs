@@ -240,8 +240,7 @@ class servicedetails {
 
       const data = await servicedetailsmodel.aggregate(pipeline);
       const totalLength =
-        totalLengthData.length > 0 ? totalLengthData[0].dataSize : 0;
-      console.log("totalLength", totalLength);
+        totalLengthData.length > 0 ? totalLengthData.length : 0;
 
       if (data) {
         return res.json({
