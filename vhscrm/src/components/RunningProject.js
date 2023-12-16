@@ -32,7 +32,7 @@ function RunningProject() {
   const [payment, setPayment] = useState(""); //need
   const [type, setType] = useState(""); //need
 
-  console.log("treatmentdata",treatmentdata)
+  console.log("treatmentdata", treatmentdata);
   //unique select option. removing duplicates--------
   const [catagories, setCatagories] = useState(new Set());
   const [techName, setTechName] = useState(new Set());
@@ -72,7 +72,7 @@ function RunningProject() {
 
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };

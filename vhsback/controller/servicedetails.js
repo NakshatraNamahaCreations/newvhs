@@ -10,32 +10,7 @@ const recheduledatasmodel = require("../model/rescheduledata");
 class servicedetails {
   async getpaymentfilterdatewise(req, res) {
     try {
-      const { date, page, limit } = req.query;
-      const currentPage = parseInt(page) || 1;
-      const itemsPerPage = parseInt(limit) || 25;
-
-      const skip = (currentPage - 1) * itemsPerPage;
-
-      const countPipeline = [
-        // Count the total number of matching documents
-
-        {
-          $match: {
-            dividedamtDates: {
-              $elemMatch: {
-                date: date,
-              },
-            },
-          },
-        },
-        {
-          $count: "totalCount",
-        },
-      ];
-
-      const totalLengthData = await servicedetailsmodel.aggregate(
-        countPipeline
-      );
+      const { date } = req.query;
 
       const pipeline = [
         {
@@ -68,19 +43,13 @@ class servicedetails {
             _id: -1,
           },
         },
-        { $skip: skip },
-        { $limit: itemsPerPage },
       ];
 
       const data = await servicedetailsmodel.aggregate(pipeline);
 
-      const totalLength =
-        totalLengthData.length > 0 ? totalLengthData[0].totalCount : 0;
-
       if (data) {
         return res.json({
           runningdata: data,
-          totalLength: totalLength,
         });
       } else {
         return res.status(404).json({ message: "No data found" });
@@ -95,7 +64,6 @@ class servicedetails {
   async getPaymentcalenderlist(req, res) {
     let { startDate, endDate } = req.body; // Modify to accept start and end dates
 
-    console.log("startDate", startDate, endDate);
     try {
       let data = await servicedetailsmodel
         .find({
@@ -107,14 +75,9 @@ class servicedetails {
         .lean()
         .sort({ _id: -1 })
         .select("dividedamtDates");
-      let totalCount = 0;
-
-      data.forEach((item) => {
-        totalCount += item.dividedamtDates.length;
-      });
 
       if (data && data.length > 0) {
-        return res.json({ dividedamtDates: data, dataSize: totalCount });
+        return res.json({ dividedamtDates: data });
       } else {
         return res.json({ dividedamtDates: [] }); // Return an empty array if no valid data found
       }
@@ -187,28 +150,7 @@ class servicedetails {
 
   async getaggregateaddcalsnew(req, res) {
     try {
-      const { category, date, page, limit } = req.query;
-      const currentPage = parseInt(page) || 1;
-      const itemsPerPage = parseInt(limit) || 25;
-
-      const skip = (currentPage - 1) * itemsPerPage;
-
-      const countPipeline = [
-        {
-          $match: {
-            category: category,
-            dividedDates: {
-              $elemMatch: {
-                date: date,
-              },
-            },
-          },
-        },
-      ];
-
-      const totalLengthData = await servicedetailsmodel.aggregate(
-        countPipeline
-      );
+      const { category, date } = req.query;
 
       const pipeline = [
         {
@@ -234,18 +176,13 @@ class servicedetails {
             _id: -1,
           },
         },
-        { $skip: skip },
-        { $limit: itemsPerPage },
       ];
 
       const data = await servicedetailsmodel.aggregate(pipeline);
-      const totalLength =
-        totalLengthData.length > 0 ? totalLengthData.length : 0;
 
       if (data) {
         return res.json({
           runningdata: data,
-          totalLength: totalLength,
         });
       } else {
         return res.status(404).json({ message: "No data found" });

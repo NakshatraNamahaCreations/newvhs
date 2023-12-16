@@ -48,7 +48,7 @@ function Createquote() {
 
   const getquote = async () => {
     let res = await axios.get(apiURL + "/getquote");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setquotedata(res.data?.quote.filter((i) => i.EnquiryId == EnquiryId));
     }
   };
@@ -73,20 +73,20 @@ function Createquote() {
 
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };
 
   const getresponse = async () => {
     let res = await axios.get(apiURL + "/getresponse");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setresponse(res.data?.response);
     }
   };
   const getenquiryadd = async () => {
     let res = await axios.get(apiURL + "/getenquiry");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setenquirydata(
         res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
       );
@@ -168,7 +168,7 @@ function Createquote() {
 
   const getquotepage = async () => {
     let res = await axios.get(apiURL + "/getenquiryquote");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       // console.log("getenquiryquote--", res);
       setquotepagedata(
         res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
@@ -177,7 +177,7 @@ function Createquote() {
   };
   const gettreatment = async () => {
     let res = await axios.get(apiURL + "/gettreatment");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       settreatmentdata(
         res.data?.treatment.filter((i) => i.EnquiryId == EnquiryId)
       );
@@ -202,7 +202,7 @@ function Createquote() {
     let res = await axios.post(apiURL + "/master/categoryaregion", {
       category: category,
     });
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setregiondata(res.data?.aregion);
     }
   };
@@ -211,7 +211,7 @@ function Createquote() {
     let res = await axios.post(apiURL + "/master/categorymaterial", {
       category: category,
     });
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setmaterialdata(res.data?.amaterial);
     }
   };
@@ -230,7 +230,7 @@ function Createquote() {
     let res = await axios.post(apiURL + "/master/postajob", {
       material: material,
     });
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setajobdata(res.data?.ajob);
     }
   };
@@ -243,7 +243,7 @@ function Createquote() {
     let res = await axios.post(apiURL + "/master/postajobrate", {
       desc: job,
     });
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setajobdatarate(res.data?.ajob);
     }
   };
@@ -263,7 +263,6 @@ function Createquote() {
       })
       .catch(function (error) {
         //handle error
-   
       });
   };
 
@@ -384,7 +383,6 @@ function Createquote() {
   const postconvertcustomer = () => {
     navigate(`/convertcustomer/${EnquiryId}`);
   };
-
 
   // Assuming quotepagedata is an array of objects with quotefollowup property
   const confirmedResponses = quotepagedata[0]?.quotefollowup.filter(

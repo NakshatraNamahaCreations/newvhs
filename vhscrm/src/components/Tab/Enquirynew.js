@@ -38,30 +38,19 @@ function Enquirynew() {
   const getenquiry = async () => {
     let res = await axios.get(apiURL + "/getallflwdata");
     if ((res.status = 200)) {
-      const data = res.data?.enquiryfollowup;
-
-      const latestRecords = {};
-
-      data.forEach((item) => {
-        const { EnquiryId, createdAt } = item;
-        if (
-          !latestRecords[EnquiryId] ||
-          createdAt > latestRecords[EnquiryId].createdAt
-        ) {
-          latestRecords[EnquiryId] = item;
-        }
-      });
-
-      const latestRecordsArray = Object.values(latestRecords);
-
-      setfilterdata(latestRecordsArray.filter((i) => i.response === "New"));
-
-      setSearchResults(latestRecordsArray.filter((i) => i.response === "New"));
+      setfilterdata(res.data?.enquiryfollowup);
+      setSearchResults(res.data?.enquiryfollowup);
     }
   };
 
-  const enquirydetail = (data) => {
-    navigate(`/enquirydetail/${data.EnquiryId}`);
+  const enquirydetail = (row) => {
+    const queryString = new URLSearchParams({
+      enquiryData: JSON.stringify(row?.enquirydata[0]),
+    }).toString();
+    const newTab = window.open(
+      `/enquirydetail/${row.EnquiryId}?${queryString}`,
+      "_blank"
+    );
   };
 
   useEffect(() => {

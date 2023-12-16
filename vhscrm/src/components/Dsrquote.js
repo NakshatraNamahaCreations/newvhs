@@ -21,15 +21,13 @@ function Dsrquote() {
   // const [section2data, setsection2data] = useState([]);
   const [termsAndCondition, setTemsAndCondition] = useState([]);
 
-
-
   useEffect(() => {
     gettermsgroup();
   }, []);
 
   const gettermsgroup = async () => {
     let res = await axios.get(apiURL + "/master/gettermgroup");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setTemsAndCondition(res.data?.termsgroup);
       const invoicType = res.data?.termsgroup.filter(
         (i) => i.type === "INVOICE"
@@ -40,7 +38,6 @@ function Dsrquote() {
       settcdata(filterByCategory);
     }
   };
-
 
   let i = 1;
 
@@ -54,37 +51,35 @@ function Dsrquote() {
 
   const getheaderimg = async () => {
     let res = await axios.get(apiURL + "/master/getheaderimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setheaderimgdata(res.data?.headerimg);
     }
   };
 
   const getfooterimg = async () => {
     let res = await axios.get(apiURL + "/master/getfooterimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setfooterimgdata(res.data?.footerimg);
     }
   };
 
   const getbank = async () => {
     let res = await axios.get(apiURL + "/getbank");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setbankdata(res.data?.bankacct);
     }
   };
 
+  const date = new Date(data?.creatAt);
 
-const date = new Date(data?.creatAt);
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
 
-const options = {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-};
-
-const formattedDate = date.toLocaleString('en-US', options);
-console.log(formattedDate);
-
+  const formattedDate = date.toLocaleString("en-US", options);
+  console.log(formattedDate);
 
   return (
     <div className="row">

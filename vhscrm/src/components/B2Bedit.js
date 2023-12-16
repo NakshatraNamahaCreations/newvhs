@@ -25,7 +25,7 @@ function B2Bedit() {
   const [approach, setapproach] = useState(Data[0]?.approach);
   const [referecetypedata, setreferecetypedata] = useState([]);
 
-  const apiURL = process.env.REACT_APP_API_URL
+  const apiURL = process.env.REACT_APP_API_URL;
 
   const addb2b = async (e) => {
     e.preventDefault();
@@ -75,27 +75,27 @@ function B2Bedit() {
 
   const getcity = async () => {
     let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcitydata(res.data?.mastercity);
     }
   };
 
   const getb2btype = async () => {
     let res = await axios.get(apiURL + "/master/getb2b");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setb2btypedata(res.data?.masterb2b);
     }
   };
   const getreferencetype = async () => {
     let res = await axios.get(apiURL + "/master/getreferencetype");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setreferecetypedata(res.data?.masterreference);
     }
   };
 
   const getb2b = async () => {
     let res = await axios.get(apiURL + `/getB2B`);
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setData(res.data?.B2B.filter((a) => a.B2BId == b2bid));
     }
   };

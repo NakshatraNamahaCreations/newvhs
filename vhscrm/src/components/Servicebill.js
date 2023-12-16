@@ -35,7 +35,7 @@ function Servicebill() {
 
   const gettermsgroup = async () => {
     let res = await axios.get(apiURL + "/master/gettermgroup");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       settcdata(res.data?.termsgroup);
       const a = res.data?.termsgroup.filter((i) => i.type === "INVOICE");
       const filteredTcdata = a.filter(
@@ -71,21 +71,21 @@ function Servicebill() {
 
   const getheaderimg = async () => {
     let res = await axios.get(apiURL + "/master/getheaderimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setheaderimgdata(res.data?.headerimg);
     }
   };
 
   const getfooterimg = async () => {
     let res = await axios.get(apiURL + "/master/getfooterimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setfooterimgdata(res.data?.footerimg);
     }
   };
 
   const getbank = async () => {
     let res = await axios.get(apiURL + "/getbank");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setbankdata(res.data?.bankacct);
     }
   };

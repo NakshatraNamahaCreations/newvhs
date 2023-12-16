@@ -68,7 +68,6 @@ function Customersearchdetails() {
     setcategory(e.target.value);
   };
 
-  console.log("category-------", category);
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const rowDataString = urlParams.get("rowData");
@@ -118,7 +117,7 @@ function Customersearchdetails() {
     const getcategory = async () => {
       try {
         let res = await axios.get(apiURL + "/getcategory");
-        if ((res.status = 200)) {
+        if (res.status === 200) {
           setCategoryData(res.data?.category);
         }
       } catch (error) {
@@ -132,7 +131,7 @@ function Customersearchdetails() {
   //   const getsubcategory = async () => {
   //     try {
   //       let res = await axios.post(apiURL + `/postsubcategory/`, { category });
-  //       if ((res.status = 200)) {
+  //       if ((res.status ===200)) {
   //         setservicedata(res.data?.subcategory);
   //       }
   //     } catch (error) {

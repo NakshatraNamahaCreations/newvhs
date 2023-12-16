@@ -37,7 +37,9 @@ function Userrights() {
   );
   const [b2b, setB2B] = useState(data?.b2b || false);
   const [community, setCommunity] = useState(data?.community || false);
-  const [paymentReport, setpaymentReport] = useState(data?.paymentReport || false);
+  const [paymentReport, setpaymentReport] = useState(
+    data?.paymentReport || false
+  );
   const [reports, setReports] = useState(data?.reports || false);
   const apiURL = process.env.REACT_APP_API_URL;
   const handleClick = (divNum) => () => {
@@ -45,7 +47,8 @@ function Userrights() {
   };
 
   const [selectedCatagory, setSelectedCatagory] = useState(
-    data?.category || []  );
+    data?.category || []
+  );
   const [selectedCity, setSelectedCity] = useState(data.city || []);
 
   const givenRights = async (e) => {
@@ -74,7 +77,7 @@ function Userrights() {
           reports: reports,
           category: selectedCatagory,
           city: selectedCity,
-          paymentReport:paymentReport
+          paymentReport: paymentReport,
         },
       };
       await axios(config).then(function (response) {
@@ -120,7 +123,7 @@ function Userrights() {
 
   const getcity = async () => {
     let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcitydata(res.data?.mastercity);
       // console.log("city", res);
       setfilterdata(res.data?.mastercity);
@@ -360,7 +363,7 @@ function Userrights() {
                   </td>
                   <td style={{ width: "80%" }}>Community</td>
                 </tr>
-                  <tr>
+                <tr>
                   <td style={{ width: "10%" }}>
                     <input
                       type="checkbox"
@@ -401,7 +404,7 @@ function Userrights() {
         <div className="col-md-6" style={{ width: "36%", marginLeft: "50px" }}>
           <div className="card" style={{ padding: "10px 27px" }}>
             <div className="table-content">Rights For Mis Reports</div>
-          
+
             <table class="table table-bordered mt-3">
               <tbody>
                 <tr>

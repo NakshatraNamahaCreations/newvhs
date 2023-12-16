@@ -8,20 +8,16 @@ import Header from "../components/layout/Header";
 import moment from "moment";
 
 const Enquiryfollowup = () => {
-  const [data, setdata] = useState([])
+  const [data, setdata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
-
 
   useEffect(() => {
     getenquiryfollowup();
-  }, [])
-  
+  }, []);
 
   const getenquiryfollowup = async () => {
     let res = await axios.get(apiURL + "/getcallquotedata");
-    if ((res.status = 200)) {
-     
-
+    if (res.status === 200) {
       const data = res.data?.enquiryfollowup;
 
       const latestRecords = {};
@@ -38,15 +34,9 @@ const Enquiryfollowup = () => {
 
       const latestRecordsArray = Object.values(latestRecords);
 
-      setdata(
-        latestRecordsArray
-      );
-
+      setdata(latestRecordsArray);
     }
   };
-
- 
-
 
   const localizer = momentLocalizer(moment);
   const navigate = useNavigate();
@@ -76,8 +66,6 @@ const Enquiryfollowup = () => {
   }
 
   const totalCount = calculateTotalCount(data);
-
-
 
   const myEventsList = Object.keys(eventCounts).map((date) => ({
     title: `${eventCounts[date]} Followup`,

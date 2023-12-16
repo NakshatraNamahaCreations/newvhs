@@ -80,7 +80,7 @@ function Payment_Reports() {
 
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };
@@ -99,7 +99,6 @@ function Payment_Reports() {
       );
       settreatmentData(filteredData);
       setSearchResults(filteredData);
-    
     }
   };
   const updatetoclose = async (id) => {
@@ -117,7 +116,7 @@ function Payment_Reports() {
       await axios(config);
       // Remove the closed row from the state
       const updatedData = treatmentdata.filter((item) => item._id !== id);
-   
+
       settreatmentData(updatedData);
       alert("Updated");
       // Reload the page
@@ -128,10 +127,7 @@ function Payment_Reports() {
     }
   };
 
-
-
   const redirectURL = (data) => {
-
     navigate(`/paymentreportdetailedview/${data.cardNo}`);
   };
 

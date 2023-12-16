@@ -5,11 +5,10 @@ import Nav1 from "../components/Nav1";
 import Modal from "react-bootstrap/Modal";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-import Formatnav from "../components/Formatnav"
-
+import Formatnav from "../components/Formatnav";
 
 function Termsgroup() {
-  const cat=sessionStorage.getItem("category");
+  const cat = sessionStorage.getItem("category");
   const [serno, setserno] = useState("");
   const [headerimgdata, setheaderimgdata] = useState([]);
   const [footerimgdata, setfooterimgdata] = useState([]);
@@ -30,8 +29,7 @@ function Termsgroup() {
   const handleClose1 = () => setShow1(false);
   const handleShow1 = () => setShow1(true);
 
- 
-  const addfooterimg= async (e) => {
+  const addfooterimg = async (e) => {
     e.preventDefault();
     formdata.append("footerimg", footerimg);
 
@@ -55,36 +53,26 @@ function Termsgroup() {
   };
 
   useEffect(() => {
- 
     getfooterimg();
   }, []);
 
-
-
   const getfooterimg = async () => {
     let res = await axios.get(apiURL + "/master/getfooterimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setfooterimgdata(res.data?.footerimg);
-     
     }
   };
-
-
 
   function imageFormatter1(cell, row) {
     return (
       <img
-      src={
-       imgURL+ "/quotationfooterimg/" +
-        cell.footerimg
-      }
+        src={imgURL + "/quotationfooterimg/" + cell.footerimg}
         height="50px"
         width="50px"
-        
       />
     );
   }
-  
+
   const columns1 = [
     {
       name: "Sl  No",
@@ -154,15 +142,15 @@ function Termsgroup() {
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
-              <p><b>Category :</b>{cat}</p>
+              <p>
+                <b>Category :</b>
+                {cat}
+              </p>
               <Formatnav />
-            
             </div>
           </div>
           <div>
             <div className="d-flex float-end pt-3">
-             
-
               <button
                 style={{
                   background: "rgb(169, 4, 46)",
@@ -177,9 +165,8 @@ function Termsgroup() {
             </div>
           </div>
           <div className="row">
-           
             <div className="col- 12 mt-5">
-            <h5>Footer images</h5>
+              <h5>Footer images</h5>
 
               <div className="mt-1 border">
                 <DataTable
@@ -198,7 +185,7 @@ function Termsgroup() {
           <div></div>
         </div>
       </div>
-     
+
       <Modal
         show={show1}
         onHide={handleClose1}
@@ -216,13 +203,12 @@ function Termsgroup() {
                   <div className="col-md-4">
                     <div className="vhs-input-label">Footer image</div>
                     <div className="group pt-1">
-                     
                       <input
                         type="file"
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setfooterimg(e.target.files[0])}
                       />
-                       {/* <b style={{fontSize:"12px"}}>Note: width=500px height=200px</b> */}
+                      {/* <b style={{fontSize:"12px"}}>Note: width=500px height=200px</b> */}
                     </div>
                   </div>
 
@@ -231,7 +217,9 @@ function Termsgroup() {
 
                 <div className="row pt-3 ">
                   <div className="col-md-2">
-                    <button className="vhs-button " onClick={addfooterimg}>Save</button>
+                    <button className="vhs-button " onClick={addfooterimg}>
+                      Save
+                    </button>
                   </div>
                 </div>
               </form>

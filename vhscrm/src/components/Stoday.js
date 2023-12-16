@@ -19,7 +19,7 @@ function Stoday() {
 
   const getenquiry = async () => {
     let res = await axios.get(apiURL + "/getenquiry");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setfilterdata(res.data?.enquiryadd);
     }
   };

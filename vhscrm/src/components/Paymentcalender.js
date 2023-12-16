@@ -96,7 +96,6 @@ function Paymentcalender() {
       });
 
       if (res.status === 200) {
-        settotalservice(res.data.dataSize);
         setdsrdata(res.data.dividedamtDates);
       }
     } catch (error) {}

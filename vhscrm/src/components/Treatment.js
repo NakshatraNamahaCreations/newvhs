@@ -8,10 +8,9 @@ import Customersernav from "./Customersernav";
 import { NavLink } from "react-router-dom";
 
 function Treatment() {
-    const { cardNo } = useParams();
-    const navigate = useNavigate();
+  const { cardNo } = useParams();
+  const navigate = useNavigate();
   const admin = JSON.parse(sessionStorage.getItem("admin"));
-
 
   const { id } = useParams();
   const apiURL = process.env.REACT_APP_API_URL;
@@ -43,7 +42,6 @@ function Treatment() {
     gettreatment();
   }, []);
 
- 
   const getcustomer = async () => {
     let res = await axios.get(apiURL + "/getcustomer");
     if (res.status === 200) {
@@ -57,19 +55,19 @@ function Treatment() {
 
   const getsubcategory = async () => {
     let res = await axios.post(apiURL + `/postsubcategory/`, { category });
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setservicedata(res.data?.subcategory);
     }
   };
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };
   const gettreatment = async () => {
     let res = await axios.get(apiURL + "/getservicedetails");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       settreatmentdata(res.data?.servicedetails.filter((i) => i.cardNo == id));
     }
   };
@@ -145,7 +143,7 @@ function Treatment() {
             startDate: startDate,
             expiryDate: expiryDate,
             firstserviceDate: firstserviceDate,
-            BackofficeExecutive:admin.displayname,
+            BackofficeExecutive: admin.displayname,
             date: moment().format("YYYY-MM-DD"),
             time: moment().format("LT"),
           },
@@ -210,8 +208,6 @@ function Treatment() {
     navigate(`/addcall/${id}`);
   };
 
-
-
   return (
     <div className="web">
       <Header />
@@ -227,7 +223,7 @@ function Treatment() {
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <h5>Billing Details</h5>
-               
+
                   <h6
                     style={{ color: "red" }}
                     onClick={() => handleRowClick(id)}
@@ -257,8 +253,6 @@ function Treatment() {
                           {item.mainContact}
                         </div>
                       </div>
-                     
-                     
                     </div>
                     <div className="row">
                       <div className="col-md-4 pt-2">
@@ -281,9 +275,10 @@ function Treatment() {
                         </div>
                       </div>
                       <div className="col-md-4 pt-2">
-                        
-                        <div >
-                        <Link to="/customeredit"state={{data:item}}  ><button className="btnn" >Edit Customer</button></Link>
+                        <div>
+                          <Link to="/customeredit" state={{ data: item }}>
+                            <button className="btnn">Edit Customer</button>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -311,10 +306,10 @@ function Treatment() {
                         >
                           <option>--select--</option>
                           {admin?.category.map((category, index) => (
-                          <option key={index} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
+                            <option key={index} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -396,9 +391,9 @@ function Treatment() {
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">1 Community</div>
                             <select
-                             className="col-md-12 vhs-input-value"
-                             onChange={(e) => setCommunity(e.target.value)}
-                             name="material"
+                              className="col-md-12 vhs-input-value"
+                              onChange={(e) => setCommunity(e.target.value)}
+                              name="material"
                               type="text"
                             >
                               <option>Select All</option>
@@ -545,10 +540,10 @@ function Treatment() {
                         >
                           <option>{editenable.category}</option>
                           {admin?.category.map((category, index) => (
-                          <option key={index} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
+                            <option key={index} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -759,10 +754,10 @@ function Treatment() {
                     Service Date
                   </th>
                   <th className="table-head" scope="col">
-                   Amount paid Date
+                    Amount paid Date
                   </th>
                   <th className="table-head" scope="col">
-                   Total Charges
+                    Total Charges
                   </th>
                   <th className="table-head" scope="col">
                     Description
@@ -785,27 +780,27 @@ function Treatment() {
                       {item.dateofService}/{item.expiryDate}
                     </td>
                     {item.contractType === "AMC" ? (
-                        <td>
-                          {item.dividedDates.map((a) => (
-                            <div>
-                              <p>{new Date(a).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </td>
-                      ) : (
-                        <td>{item.dateofService}</td>
-                      )}
-                       {item.contractType === "AMC" ? (
-                        <td>
-                          {item.dividedamtDates.map((a) => (
-                            <div>
-                              <p>{new Date(a).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </td>
-                      ) : (
-                        <td>{item.dateofService}</td>
-                      )}
+                      <td>
+                        {item.dividedDates.map((a) => (
+                          <div>
+                            <p>{new Date(a).toLocaleDateString()}</p>
+                          </div>
+                        ))}
+                      </td>
+                    ) : (
+                      <td>{item.dateofService}</td>
+                    )}
+                    {item.contractType === "AMC" ? (
+                      <td>
+                        {item.dividedamtDates.map((a) => (
+                          <div>
+                            <p>{new Date(a).toLocaleDateString()}</p>
+                          </div>
+                        ))}
+                      </td>
+                    ) : (
+                      <td>{item.dateofService}</td>
+                    )}
                     <td>{item.serviceCharge}</td>
 
                     <td>{item.desc}</td>

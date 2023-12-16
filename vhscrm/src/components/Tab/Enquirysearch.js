@@ -5,14 +5,14 @@ import axios from "axios";
 // import Table from "react-bootstrap/Table";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 function Enquirysearch() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const navigate = useNavigate();
-  const [citydata, setcitydata] = useState([]);
-  const [enquiryAddData, setenquiryadddata] = useState([]);
+
   const [name, setname] = useState("");
-  const [fromdate, setfromdate] = useState("");
+
   const [todate, settodate] = useState("");
   const [city, setcity] = useState("");
   const [contact, setcontact] = useState("");
@@ -20,56 +20,47 @@ function Enquirysearch() {
   const [executive, setexecutive] = useState("");
   const [filterdata, setfilterdata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
-
-  // console.log(enquiryadddata);
-
-  const getcity = async () => {
-    let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
-      setcitydata(res.data?.mastercity);
-    }
-  };
-  const getenquiryadd = async () => {
-    let res = await axios.get(apiURL + "/getenquiry");
-    if (res.status === 200) {
-      // console.log("enquiryadddata", res);
-      setenquiryadddata(res.data?.enquiryadd);
-    }
+  const [fromdate, setfromdate] = useState(moment().format("DD-MM-YYYY"));
+  const [userdata, setuserdata] = useState([]);
+  const handleDateChange = (e) => {
+    // Update the state with the raw date value
+    setfromdate(e.target.value);
   };
 
   useEffect(() => {
-    getcity();
-    getenquiryadd();
+    getuser();
   }, []);
 
-  const filterData = () => {
-    const result = enquiryAddData.filter((item) => {
-      const itemName = item.name ? item.name.toLowerCase() : "";
-      const itemCity = item.city ? item.city.toLowerCase() : "";
-      const itemEnquiryFromDate = item.enquirydate ? item.enquirydate : "";
-      const itemEnquiryToDate = item.enquirydate ? item.enquirydate : "";
-      const itemExecutive = item.executive ? item.executive.toLowerCase() : "";
-      const itemContact = item.contact1 ? item.contact1.toLowerCase() : "";
+  const getuser = async () => {
+    let res = await axios.get(apiURL + "/master/getuser");
+    if ((res.status = 200)) {
+      setuserdata(res.data?.masteruser);
+    }
+  };
 
-      const filterName = name ? name.toLowerCase() : "";
-      const filterCity = city ? city.toLowerCase() : "";
-      const filterEnquiryFromDate = item.fromdate ? item.fromdate : "";
-      const filterEnquiryToDate = item.todate ? item.todate : "";
-      const filterExecutive = executive ? executive.toLowerCase() : "";
-      const filterContact = contact ? contact.toLowerCase() : "";
+  const filterData = async () => {
+    try {
+      const res = await axios.post(`${apiURL}/searchenquiry`, {
+        name,
+        fromdate,
+        todate,
+        contact,
+        city,
+        status,
+        executive,
+      });
 
-      return itemName.includes(filterName) &&
-        itemCity.includes(filterCity) &&
-        // itemEnquiryFromDate == fromdate || todate===""? true: false&&
-        itemEnquiryFromDate.includes(filterEnquiryFromDate) &&
-        itemEnquiryToDate.includes(filterEnquiryToDate) &&
-        // itemEnquiryToTime.includes(filterEnquiryToTime)||toTime===" "?true:false&&
-        itemExecutive.includes(filterExecutive) &&
-        itemContact.includes(filterContact)
-        ? true
-        : false;
-    });
-    setfilterdata(result);
+      if (res.status === 200) {
+        setfilterdata(res.data?.enquiryadd);
+      } else {
+        // Set filterdata to an empty array in case of an error
+        setfilterdata([]);
+      }
+    } catch (error) {
+      console.log("err", error);
+      // Set filterdata to an empty array in case of an error
+      setfilterdata([]);
+    }
   };
 
   const handleSearchClick = (e) => {
@@ -129,7 +120,14 @@ function Enquirysearch() {
   ];
 
   const handleRowClick = (row) => {
-    navigate(`/enquirydetail/${row.EnquiryId}`);
+    // navigate(`/enquirydetail/${row.EnquiryId}`);
+    const queryString = new URLSearchParams({
+      enquiryData: JSON.stringify(row),
+    }).toString();
+    const newTab = window.open(
+      `/enquirydetail/${row.EnquiryId}?${queryString}`,
+      "_blank"
+    );
   };
 
   return (
@@ -164,7 +162,8 @@ function Enquirysearch() {
                       <input
                         type="date"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e) => setfromdate(e.target.value)}
+                        value={fromdate}
+                        onChange={handleDateChange}
                       />
                     </div>
                   </div>
@@ -208,7 +207,7 @@ function Enquirysearch() {
                     </div>
                   </div>
 
-                  <div className="col-md-4 pt-3">
+                  {/* <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">Status</div>
                     <div className="group pt-1">
                       <select
@@ -224,17 +223,20 @@ function Enquirysearch() {
                         <option>Hemanth</option>
                       </select>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label"> Executive</div>
                     <div className="group pt-1">
-                      <input
-                        type="text"
-                        value={executive}
+                      <select
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setexecutive(e.target.value)}
-                      />
+                      >
+                        <option>--select--</option>
+                        {userdata?.map((i) => (
+                          <option value={i.displayname}>{i.displayname}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -252,13 +254,7 @@ function Enquirysearch() {
               </form>
             </div>
           </div>
-          {/* {searchClicked && !hasResults && (
-            <p style={{ textAlign: "center", marginTop: "18px" }}>
-              {" "}
-              No matching results found.
-            </p>
-          )} */}
-          {/* {searchClicked && hasResults && ( */}
+
           <DataTable
             columns={columns}
             data={filterdata}
@@ -269,45 +265,6 @@ function Enquirysearch() {
             highlightOnHover
             onRowClicked={handleRowClick}
           />
-          {/* )} */}
-          {/* {searchClicked && hasResults && ( */}
-          {/* <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>Reference1</th>
-                <th>Reference2</th>
-                <th>Reference3</th>
-                <th>City</th>
-
-                <th>Interested for</th>
-                <th>Executive</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((item) => (
-                <tr>
-                  <td>{i++}</td>
-                  <td>{item.enquirydate}</td>
-                  <td>{item.time}</td>
-                  <td>{item.name}</td>
-                  <td>{item.contact1}</td>
-                  <td>{item.address}</td>
-                  <td>{item.reference1}</td>
-                  <td>{item.reference2}</td>
-                  <td>{item.reference3}</td>
-                  <td>{item.city}</td>
-                  <td>{item.intrestedfor}</td>
-                  <td>{item.executive}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table> */}
         </div>
       </div>
     </div>

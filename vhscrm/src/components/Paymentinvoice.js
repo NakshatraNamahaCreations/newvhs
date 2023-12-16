@@ -21,21 +21,19 @@ function Paymentinvoice() {
 
   const [section2data, setsection2data] = useState([]);
 
-
-
   useEffect(() => {
     gettermsgroup();
   }, []);
 
   const gettermsgroup = async () => {
     let res = await axios.get(apiURL + "/master/gettermgroup");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       settcdata(res.data?.termsgroup);
     }
   };
   const gettermsgroup2 = async () => {
     let res = await axios.get(apiURL + "/master/gettermgroup2");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setsection2data(res.data?.termsgroup2);
     }
   };
@@ -52,21 +50,21 @@ function Paymentinvoice() {
 
   const getheaderimg = async () => {
     let res = await axios.get(apiURL + "/master/getheaderimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setheaderimgdata(res.data?.headerimg);
     }
   };
 
   const getfooterimg = async () => {
     let res = await axios.get(apiURL + "/master/getfooterimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setfooterimgdata(res.data?.footerimg);
     }
   };
 
   const getbank = async () => {
     let res = await axios.get(apiURL + "/getbank");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setbankdata(res.data?.bankacct);
     }
   };
@@ -156,7 +154,7 @@ function Paymentinvoice() {
                       </td>
 
                       <td className="text-center">{data?.contractType}</td>
-                     
+
                       {data?.contractType === "AMC" ? (
                         <td className="text-center">{data1}</td>
                       ) : (
@@ -187,8 +185,6 @@ function Paymentinvoice() {
                     )}
                   </h5>
                 </div>
-
-              
               </div>
             </div>
             <div className="text-end px-2" style={{ fontWeight: "bold" }}>
@@ -196,7 +192,8 @@ function Paymentinvoice() {
               <span style={{ fontWeight: 400 }}>
                 {data.dividedamtCharges.length > 0 && (
                   <>
-                    {numberToWords.toWords(data.dividedamtCharges[0].charge) + " Only"}
+                    {numberToWords.toWords(data.dividedamtCharges[0].charge) +
+                      " Only"}
                   </>
                 )}
               </span>
@@ -301,7 +298,9 @@ function Paymentinvoice() {
           <button className="vhs-button">Send Invoice</button>
         </div>
         <div className="col-3">
-          <button className="vhs-button" onClick={handlePrint}>Print</button>
+          <button className="vhs-button" onClick={handlePrint}>
+            Print
+          </button>
         </div>
       </div>
     </div>

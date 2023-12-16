@@ -7,59 +7,47 @@ import { useNavigate, useParams } from "react-router-dom";
 function Convertcustomer() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [data, setdata] = useState([]);
+
   const [citydata, setcitydata] = useState([]);
   const [customertypedata, setcustomertypedata] = useState([]);
-
-  const [customername, setcustomername] = useState(data[0]?.name);
+  const [enquiryData, setenquiryData] = useState({});
+  const [urlParams, seturlParams] = useState();
+  const [customername, setcustomername] = useState(enquiryData?.name);
   const [contactperson, setcontactperson] = useState("");
-  const [maincontact, setmaincontact] = useState(data[0]?.contact1);
+  const [maincontact, setmaincontact] = useState(enquiryData?.contact1);
   const [alternatenumber, setalternate] = useState("");
   const [email, setemail] = useState();
   const [gst, setgst] = useState("");
   const [rbhf, setrbhf] = useState("");
   const [cnap, setcnap] = useState("");
-  const [lnf, setlnf] = useState(data[0]?.address);
+  const [lnf, setlnf] = useState(enquiryData?.address);
   const [mainarea, setarea] = useState("");
-  const [city, setcity] = useState(data[0]?.city);
+  const [city, setcity] = useState(enquiryData?.city);
   const [pincode, setpincode] = useState("");
   const [customertype, setcustomertype] = useState("");
-  const [size, setsize] = useState("");
-  const [color, setcolor] = useState("");
-  const [instructions, setinstructions] = useState("");
+
   const [approach, setapproach] = useState("");
   const [serviceexecutive, setserviceexc] = useState("");
   const apiURL = process.env.REACT_APP_API_URL;
-  const imgURL = process.env.REACT_APP_IMAGE_API_URL;
 
   const [referecetypedata, setreferecetypedata] = useState([]);
-  const [userdata, setuserdata] = useState([]);
+
   const [customerdata, setcustomerdata] = useState([]);
-  const [categorydata, setcategorydata] = useState([]);
+
   const [category, setcategory] = useState("");
 
   useEffect(() => {
-    getenquiryadd();
-  }, []);
+    const urlParams = new URLSearchParams(window.location.search);
+    const enquiryDataString = urlParams.get("enquiryData");
+    const enquiryData = JSON.parse(enquiryDataString);
+    seturlParams(urlParams);
+    setenquiryData(enquiryData);
+  }, [id]);
 
-  const getenquiryadd = async () => {
-    let res = await axios.get(apiURL + "/getenquiry");
-    if ((res.status = 200)) {
-      setdata(res.data?.enquiryadd.filter((item) => item.EnquiryId == id));
-    }
-  };
-console.log(contactperson,rbhf,cnap,lnf,customertype)
   const addcustomer = async (e) => {
     e.preventDefault();
 
-    if (
-      !contactperson ||
-      !rbhf ||
-      !cnap ||
-      !lnf ||
-      !customertype
-  
-    ) {
+    if (!contactperson || !rbhf || !cnap || !lnf || !customertype) {
       alert("fill all necessary fileds");
     } else {
       try {
@@ -72,45 +60,47 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
           data: {
             EnquiryId: id,
             cardNo: customerdata ? customerdata + 1 : 1,
-            category: category ? category : data[0]?.category,
-            customerName: customername ? customername : data[0]?.name,
+            category: category ? category : enquiryData?.category,
+            customerName: customername ? customername : enquiryData?.name,
             contactPerson: contactperson
               ? contactperson
-              : data[0]?.contactperson,
-            mainContact: maincontact ? maincontact : data[0]?.contact1,
+              : enquiryData?.contactperson,
+            mainContact: maincontact ? maincontact : enquiryData?.contact1,
             alternateContact: alternatenumber,
-            email: email ? email : data[0]?.email,
+            email: email ? email : enquiryData?.email,
             gst: gst,
             rbhf: rbhf,
             cnap: cnap,
             lnf: lnf,
-            deliveryAddress:{
-              landmark:cnap,
-              platNo:rbhf,
-              saveAs:mainarea,
-              address:lnf
-
+            deliveryAddress: {
+              landmark: cnap,
+              platNo: rbhf,
+              saveAs: mainarea,
+              address: lnf,
             },
             mainArea: mainarea,
-            city: city ? city : data[0]?.city,
+            city: city ? city : enquiryData?.city,
             pinCode: pincode,
             customerType: customertype,
-            size: size,
-            color: color,
-            instructions: instructions,
+
             approach: approach,
             serviceExecute: serviceexecutive,
           },
         };
         await axios(config).then(function (response) {
           if (response.status === 200) {
-            const data=response.data.user
+            const id = response.data.user;
 
-            navigate(`/customersearchdetails/${data?._id}`);
+            const queryString = new URLSearchParams({
+              rowData: JSON.stringify(id),
+            }).toString();
+            const newTab = window.open(
+              `/customersearchdetails/${id?._id}?${queryString}`,
+              "_blank"
+            );
           }
         });
       } catch (error) {
-
         if (error.response) {
           alert(error.response.data.error); // Display error message from the API response
         } else {
@@ -121,50 +111,21 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
   };
 
   useEffect(() => {
-    getcity();
     getcustomertype();
     getreferencetype();
-    getuser();
-    getcustomer();
-    getcategory();
   }, []);
 
-  const getcity = async () => {
-    let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
-      setcitydata(res.data?.mastercity);
-    }
-  };
   const getcustomertype = async () => {
     let res = await axios.get(apiURL + "/master/getcustomertype");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcustomertypedata(res.data?.mastercustomertype);
     }
   };
 
   const getreferencetype = async () => {
     let res = await axios.get(apiURL + "/master/getreferencetype");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setreferecetypedata(res.data?.masterreference);
-    }
-  };
-  const getuser = async () => {
-    let res = await axios.get(apiURL + "/master/getuser");
-    if ((res.status = 200)) {
-      setuserdata(res.data?.masteruser);
-    }
-  };
-
-  const getcustomer = async () => {
-    let res = await axios.get(apiURL + "/getcustomer");
-    if ((res.status = 200)) {
-      setcustomerdata(res.data?.customers[0]?.cardNo);
-    }
-  };
-  const getcategory = async () => {
-    let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
-      setcategorydata(res.data?.category);
     }
   };
 
@@ -194,9 +155,9 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        value={data[0]?.name}
+                        value={enquiryData?.name}
                         onChange={(e) => setcustomername(e.target.value)}
-                        defaultValue={data[0]?.name}
+                        defaultValue={enquiryData?.name}
                       />
                     </div>
                   </div>
@@ -228,7 +189,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                         type="number"
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setmaincontact(e.target.value)}
-                        defaultValue={data[0]?.contact1}
+                        defaultValue={enquiryData?.contact1}
                       />
                     </div>
                   </div>
@@ -243,15 +204,13 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                     </div>
                   </div>
                   <div className="col-md-4 pt-3">
-                    <div className="vhs-input-label">
-                      Email
-                    </div>
+                    <div className="vhs-input-label">Email</div>
                     <div className="group pt-1">
                       <input
                         type="email"
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setemail(e.target.value)}
-                        defaultValue={data[0]?.email}
+                        defaultValue={enquiryData?.email}
                       />
                     </div>
                   </div>
@@ -287,7 +246,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                   </div>
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">
-               Landmark
+                      Landmark
                       <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
@@ -301,7 +260,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                   </div>
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">
-                     Address
+                      Address
                       <span className="text-danger">*</span>
                     </div>
                     <div className="group pt-1">
@@ -309,7 +268,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                         rows={4}
                         cols={6}
                         className="col-md-12 vhs-input-value"
-                        defaultValue={data[0]?.address}
+                        defaultValue={enquiryData?.address}
                         onChange={(e) => setlnf(e.target.value)}
                       />
                     </div>
@@ -335,7 +294,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setcity(e.target.value)}
                       >
-                        <option>{data[0]?.city}</option>
+                        <option>{enquiryData?.city}</option>
                         {citydata.map((item) => (
                           <option value={item.city}>{item.city}</option>
                         ))}
@@ -344,9 +303,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                   </div>
 
                   <div className="col-md-4 pt-3">
-                    <div className="vhs-input-label">
-                      Pincode 
-                    </div>
+                    <div className="vhs-input-label">Pincode</div>
                     <div className="group pt-1">
                       <input
                         type="text"
@@ -382,10 +339,7 @@ console.log(contactperson,rbhf,cnap,lnf,customertype)
                   </div>
 
                   <div className="col-md-4 pt-3">
-                    <div className="vhs-input-label">
-                      Approach
-                     
-                    </div>
+                    <div className="vhs-input-label">Approach</div>
                     <div className="group pt-1">
                       <select
                         className="col-md-12 vhs-input-value"

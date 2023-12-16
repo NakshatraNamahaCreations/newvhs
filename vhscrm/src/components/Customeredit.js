@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 function Customeredit() {
   const location = useLocation();
   const { data } = location.state;
- 
+
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const navigate = useNavigate();
   const [citydata, setcitydata] = useState([]);
@@ -72,8 +72,6 @@ function Customeredit() {
       };
       await axios(config).then(function (response) {
         if (response.status === 200) {
-    
-  
           navigate(`/customersearchdetails/${data.cardNo}`);
         }
       });
@@ -92,33 +90,32 @@ function Customeredit() {
 
   const getcity = async () => {
     let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcitydata(res.data?.mastercity);
     }
   };
   const getcustomertype = async () => {
     let res = await axios.get(apiURL + "/master/getcustomertype");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcustomertypedata(res.data?.mastercustomertype);
     }
   };
 
   const getreferencetype = async () => {
     let res = await axios.get(apiURL + "/master/getreferencetype");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setreferecetypedata(res.data?.masterreference);
     }
   };
   const getuser = async () => {
     let res = await axios.get(apiURL + "/master/getuser");
-    if ((res.status = 200)) {
-   
+    if (res.status === 200) {
       setuserdata(res.data?.masteruser);
     }
   };
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };
@@ -134,7 +131,6 @@ function Customeredit() {
   useEffect(() => {
     getAllCustomer();
   }, []);
-
 
   return (
     <div className="">
@@ -225,7 +221,6 @@ function Customeredit() {
                     </div>
                   </div>
 
-                 
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">GSTIN Id.</div>
                     <div className="group pt-1">
@@ -358,9 +353,6 @@ function Customeredit() {
                       </select>
                     </div>
                   </div>
-                
-
-                 
 
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">
@@ -381,8 +373,6 @@ function Customeredit() {
                       </select>
                     </div>
                   </div>
-
-                  
                 </div>
 
                 <div className="row pt-3 justify-content-center">

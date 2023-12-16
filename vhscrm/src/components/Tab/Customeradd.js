@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 function Customeradd() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const navigate = useNavigate();
-  const [citydata, setcitydata] = useState([]);
+
   const [customertypedata, setcustomertypedata] = useState([]);
   const [customername, setcustomername] = useState("");
   const [contactperson, setcontactperson] = useState("");
@@ -22,29 +22,24 @@ function Customeradd() {
   const [city, setcity] = useState("");
   const [pincode, setpincode] = useState("");
   const [customertype, setcustomertype] = useState("");
-  const [size, setsize] = useState("");
-  const [color, setcolor] = useState("");
-  const [instructions, setinstructions] = useState("");
+
   const [approach, setapproach] = useState("");
-  const [serviceexecutive, setserviceexc] = useState("");
-  const [category, setcategory] = useState("");
+
   const apiURL = process.env.REACT_APP_API_URL;
   const [referecetypedata, setreferecetypedata] = useState([]);
-  const [userdata, setuserdata] = useState([]);
-  const [allCustomer, setallCustomer] = useState([]);
+
   const [latestCardNo, setLatestCardNo] = useState(0);
-  const [categorydata, setcategorydata] = useState([]);
 
   const handleInputChange = (e) => {
     // Remove any non-numeric characters
-    const numericValue = e.target.value.replace(/\D/g, '');
+    const numericValue = e.target.value.replace(/\D/g, "");
 
     // Limit the input to 10 characters
     const limitedValue = numericValue.slice(0, 10);
 
     setmaincontact(limitedValue);
   };
-  console.log(contactperson,rbhf,cnap,lnf,customertype)
+
   const addcustomer = async (e) => {
     e.preventDefault();
     if (
@@ -67,12 +62,11 @@ function Customeradd() {
           data: {
             customerName: customername,
             contactPerson: contactperson,
-            deliveryAddress:{
-              landmark:cnap,
-              platNo:rbhf,
-              saveAs:mainarea,
-              address:lnf
-
+            deliveryAddress: {
+              landmark: cnap,
+              platNo: rbhf,
+              saveAs: mainarea,
+              address: lnf,
             },
             mainContact: maincontact,
             alternateContact: alternatenumber,
@@ -85,8 +79,6 @@ function Customeradd() {
             city: city,
             pinCode: pincode,
             customerType: customertype,
-            size: size,
-            color: color,
 
             approach: approach,
           },
@@ -94,8 +86,14 @@ function Customeradd() {
         const response = await axios(config);
 
         if (response.status === 200) {
-           const id=response.data.user
-          navigate(`/customersearchdetails/${id?._id}`);
+          const id = response.data.user;
+          const queryString = new URLSearchParams({
+            rowData: JSON.stringify(id),
+          }).toString();
+          const newTab = window.open(
+            `/customersearchdetails/${id?._id}?${queryString}`,
+            "_blank"
+          );
         }
       } catch (error) {
         console.error(error);
@@ -109,20 +107,10 @@ function Customeradd() {
   };
 
   useEffect(() => {
-    getcity();
     getcustomertype();
     getreferencetype();
-    getuser();
-    getAllCustomer();
-    getcategory();
   }, []);
 
-  const getcity = async () => {
-    let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
-      setcitydata(res.data?.mastercity);
-    }
-  };
   const getcustomertype = async () => {
     let res = await axios.get(apiURL + "/master/getcustomertype");
     if ((res.status = 200)) {
@@ -134,27 +122,6 @@ function Customeradd() {
     let res = await axios.get(apiURL + "/master/getreferencetype");
     if ((res.status = 200)) {
       setreferecetypedata(res.data?.masterreference);
-    }
-  };
-  const getuser = async () => {
-    let res = await axios.get(apiURL + "/master/getuser");
-    if ((res.status = 200)) {
-
-      setuserdata(res.data?.masteruser);
-    }
-  };
-  const getcategory = async () => {
-    let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
-      setcategorydata(res.data?.category);
-    }
-  };
-
-  const getAllCustomer = async () => {
-    let res = await axios.get(apiURL + "/getcustomer");
-    if (res.status === 200) {
-      setallCustomer(res.data?.customers);
-      setLatestCardNo(res.data?.customers[0]?.cardNo);
     }
   };
 
@@ -218,7 +185,7 @@ function Customeradd() {
                         type="tel"
                         className="col-md-12 vhs-input-value"
                         value={maincontact}
-      onInput={handleInputChange}
+                        onInput={handleInputChange}
                       />
                     </div>
                   </div>
@@ -288,7 +255,7 @@ function Customeradd() {
                   </div>
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">
-                  Full  Address
+                      Full Address
                       <span className="text-danger">*</span>
                     </div>
                     <div className="group pt-1">
@@ -325,9 +292,6 @@ function Customeradd() {
                         {admin?.city.map((item) => (
                           <option value={item.name}>{item.name}</option>
                         ))}
-                        {/* {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
-                        ))} */}
                       </select>
                     </div>
                   </div>

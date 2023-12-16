@@ -9,9 +9,9 @@ const defaultstate = 1;
 
 function Enquiryadd() {
   const navigate = useNavigate();
+  const [hit, sethit] = useState(false);
   const admin = JSON.parse(sessionStorage.getItem("admin"));
-  const [citydata, setcitydata] = useState([]);
-  const [categorydata, setcategorydata] = useState([]);
+
   const [latestEnquiryId, setLatestEnquiryId] = useState(0);
   const [whatsappTemplate, setWhatsappTemplate] = useState("");
   const [enquirydate, setenquirydate] = useState(moment().format("MM-DD-YYYY"));
@@ -31,9 +31,9 @@ function Enquiryadd() {
   const [serivceName, setSeviceName] = useState("");
   const [serivceId, setSeviceId] = useState("");
   const apiURL = process.env.REACT_APP_API_URL;
-  const [subcategorydata, setsubcategorydata] = useState([]);
+
   const [referecetypedata, setreferecetypedata] = useState([]);
-  const [enquirydata, setenquirydata] = useState([]);
+
   const [whatsappdata, setwhatsappdata] = useState([]);
   const [serviceData, setServiceData] = useState([]);
 
@@ -52,21 +52,11 @@ function Enquiryadd() {
   }, []);
 
   const getenquiry = async () => {
-    let res = await axios.get(apiURL + "/getenquiry");
+    let res = await axios.get(apiURL + "/getenquirydatlast");
     if (res.status === 200) {
-      setenquirydata(res.data?.enquiryadd);
-      // console.log("enquiryData===", res.data?.enquiryadd);
-      setLatestEnquiryId(res.data?.enquiryadd[0]?.EnquiryId);
+      setLatestEnquiryId(res.data?.enquiryadd?.EnquiryId);
     }
   };
-
-  if (enquirydata.length > 0) {
-    var firstElement = enquirydata[0];
-    var count = firstElement.count;
-    // console.log(count);
-  } else {
-    console.log("The enquirydata array is empty.");
-  }
 
   useEffect(() => {
     getwhatsapptemplate();
@@ -114,6 +104,7 @@ function Enquiryadd() {
     ) {
       alert("Please enter all fields");
     } else {
+      sethit(true);
       try {
         const config = {
           url: "/addenquiry",
@@ -144,30 +135,29 @@ function Enquiryadd() {
         await axios(config).then(function (response) {
           if (response.status === 200) {
             const enquiryId = response.data.data.EnquiryId;
+            const data = response.data.data;
+
+            const queryString = new URLSearchParams({
+              enquiryData: JSON.stringify(data),
+            }).toString();
+            const newTab = window.open(
+              `/enquirydetail/${enquiryId}?${queryString}`,
+              "_blank"
+            );
 
             makeApiCall(getTemplateDatails, contact1);
-            navigate(`/enquirydetail/${enquiryId}`);
+            sethit(false);
           }
         });
       } catch (error) {
         console.error(error);
+        sethit(false);
         if (error.response) {
           alert(error.response.data.error); // Display error message from the API response
         } else {
           alert("An error occurred. Please try again later.");
         }
       }
-    }
-  };
-
-  useEffect(() => {
-    getsubcategory();
-  }, []);
-
-  const getsubcategory = async () => {
-    let res = await axios.get(apiURL + "/getsubcategory");
-    if (res.status == 200) {
-      setsubcategorydata(res.data?.subcategory);
     }
   };
 
@@ -229,24 +219,8 @@ function Enquiryadd() {
   };
 
   useEffect(() => {
-    getcity();
-    getcategory();
     getreferencetype();
   }, []);
-
-  const getcity = async () => {
-    let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
-      setcitydata(res.data?.mastercity);
-    }
-  };
-
-  const getcategory = async () => {
-    let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
-      setcategorydata(res.data?.category);
-    }
-  };
 
   const getreferencetype = async () => {
     let res = await axios.get(apiURL + "/master/getreferencetype");
@@ -383,9 +357,7 @@ function Enquiryadd() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>--select--</option>
-                        {/* {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
-                        ))} */}
+
                         {admin?.category.map((category, index) => (
                           <option key={index} value={category.name}>
                             {category.name}

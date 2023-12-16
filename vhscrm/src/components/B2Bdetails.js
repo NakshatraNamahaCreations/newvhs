@@ -32,15 +32,13 @@ function B2Bdetails() {
 
   const apiURL = process.env.REACT_APP_API_URL;
 
-
-
   useEffect(() => {
     getresponse();
   }, []);
 
   const getresponse = async () => {
     let res = await axios.get(apiURL + "/getresponse");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       console.log(res.data.response);
       setresponsedata(res.data?.response);
     }
@@ -53,19 +51,15 @@ function B2Bdetails() {
 
   const getb2b = async () => {
     let res = await axios.get(apiURL + "/getB2B");
-    if ((res.status = 200)) {
-      setfilterdata(
-        res.data?.B2B.filter((item) => item.B2BId == b2bid)
-      );
+    if (res.status === 200) {
+      setfilterdata(res.data?.B2B.filter((item) => item.B2BId == b2bid));
     }
   };
 
   const getb2bfollowup = async () => {
     let res = await axios.get(apiURL + "/getb2bfollowup");
-    if ((res.status = 200)) {
-      setflwdata(
-        res.data?.B2B.filter((item) => item.B2BId == b2bid)
-      );
+    if (res.status === 200) {
+      setflwdata(res.data?.B2B.filter((item) => item.B2BId == b2bid));
     }
   };
   let i = 1;
@@ -192,7 +186,7 @@ function B2Bdetails() {
   const postconvertcustomer = async (e) => {
     e.preventDefault();
 
-    if (!desc ) {
+    if (!desc) {
       alert("fill all fields");
     } else {
       try {
@@ -218,7 +212,7 @@ function B2Bdetails() {
             console.log("success");
             alert(" Added");
             window.location.assign(`/b2bdetails/${b2bid}`);
-           
+
             // window.location.assign("/convertcustomer",{data});
           }
         });
@@ -269,7 +263,7 @@ function B2Bdetails() {
       return "transparent";
     }
   }
-  
+
   const convertISOToNormalDate = (isoDate) => {
     const isoDateObj = new Date(isoDate);
     const normalDateStr = isoDateObj.toLocaleDateString();
@@ -291,7 +285,7 @@ function B2Bdetails() {
                       <Link to="/b2badd"> B2B Add</Link>
                     </Nav.Link>
                   </Nav.Item>
-                 
+
                   <Nav.Item>
                     <Nav.Link eventKey="third">
                       <Link to="/b2bsearch">B2B Search</Link>
@@ -327,9 +321,7 @@ function B2Bdetails() {
                       <div className="col-md-12">
                         <div className="row mt-3">
                           <div className="col-md-5">
-                            <div className="vhs-sub-heading">
-                              B2B Detail
-                            </div>
+                            <div className="vhs-sub-heading">B2B Detail</div>
                             <div className="mt-1">
                               <div
                                 className="row m-auto"
@@ -345,14 +337,14 @@ function B2Bdetails() {
                                   <span onClick={() => editdetails(b2bid)}>
                                     Modify
                                   </span>
-                                
                                 </div>
                               </div>
                               <table class="table table-hover table-bordered">
                                 <tbody>
-                                <tr className="user-tbale-body">
-                                    <td  colspan="2"><b>B2B Basic Information</b></td>
-                                  
+                                  <tr className="user-tbale-body">
+                                    <td colspan="2">
+                                      <b>B2B Basic Information</b>
+                                    </td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">B2B ID</td>
@@ -364,18 +356,22 @@ function B2Bdetails() {
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">
-                                     Contact Person
+                                      Contact Person
                                     </td>
                                     <td> {filterdata[0]?.contactperson}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
-                                    <td className="text-center">Main Contact</td>
+                                    <td className="text-center">
+                                      Main Contact
+                                    </td>
                                     <td>{filterdata[0]?.maincontact}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
-                                    <td className="text-center">Alternate Number</td>
+                                    <td className="text-center">
+                                      Alternate Number
+                                    </td>
                                     <td>{filterdata[0]?.alternateno}</td>
                                   </tr>
 
@@ -384,8 +380,9 @@ function B2Bdetails() {
                                     <td>{filterdata[0]?.email}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
-                                    <td colspan="2"><b>B2B Details Address</b></td>
-                                    
+                                    <td colspan="2">
+                                      <b>B2B Details Address</b>
+                                    </td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Address</td>
@@ -398,8 +395,9 @@ function B2Bdetails() {
                                   </tr>
 
                                   <tr className="user-tbale-body">
-                                    <td  colspan="2"><b>B2B other Infirmation</b></td>
-                             
+                                    <td colspan="2">
+                                      <b>B2B other Infirmation</b>
+                                    </td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
@@ -419,28 +417,30 @@ function B2Bdetails() {
                                     <td>{filterdata[0]?.intrestedfor}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
-                                    <td  colspan="2"><b>Executive details</b></td>
-                               
+                                    <td colspan="2">
+                                      <b>Executive details</b>
+                                    </td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">
-                                   Executive Name
+                                      Executive Name
                                     </td>
                                     <td>{filterdata[0]?.executiveName}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">
-                                   Executive Number
+                                      Executive Number
                                     </td>
                                     <td>{filterdata[0]?.executivenumber}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
-                                    <td className="text-center">
-                                  Entry Date
+                                    <td className="text-center">Entry Date</td>
+                                    <td>
+                                      {convertISOToNormalDate(
+                                        filterdata[0]?.createdAt
+                                      )}
                                     </td>
-                                    <td>{convertISOToNormalDate(filterdata[0]?.createdAt)}</td>
                                   </tr>
-                                  
                                 </tbody>
                               </table>{" "}
                               <div

@@ -8,31 +8,36 @@ import Enquiryadd from "./Enquiryadd";
 import Enquirysearch from "./Enquirysearch";
 import Enquirynew from "./Enquirynew";
 import Header from "../layout/Header";
-import { Link, } from "react-router-dom";
+import { Link } from "react-router-dom";
 import moment from "moment";
 import axios from "axios";
 
-
-function Enquirynewdetail() {
+function Enquirynewdetail(props) {
   const { EnquiryId } = useParams();
 
   const admin = JSON.parse(sessionStorage.getItem("admin"));
 
   const navigate = useNavigate();
 
-  const [staffname, setstaffname] = useState("pankaj");
-  const [folldate, setfolldate] = useState("");
   const [whatsappTemplate, setWhatsappTemplate] = useState("");
   const [desc, setdesc] = useState("");
   const [colorcode, setcolorcode] = useState("");
   const [nxtfoll, setnxtfoll] = useState("00/00/0000");
   const [value, setvalue] = useState("00.00");
-  const [filterdata, setfilterdata] = useState([]);
   const [responsedata, setresponsedata] = useState([]);
   const [flwdata, setflwdata] = useState([]);
 
   const apiURL = process.env.REACT_APP_API_URL;
+  const [enquiryData, setenquiryData] = useState({});
+  const [urlParams, seturlParams] = useState();
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const enquiryDataString = urlParams.get("enquiryData");
+    const enquiryData = JSON.parse(enquiryDataString);
+    seturlParams(urlParams);
+    setenquiryData(enquiryData);
+  }, [EnquiryId]);
 
   useEffect(() => {
     const getresponse = async () => {
@@ -48,37 +53,18 @@ function Enquirynewdetail() {
     getresponse();
   }, []);
 
-  useEffect(() => {
-    const getenquiryadd = async () => {
-      try {
-        let res = await axios.get(apiURL + "/getenquiry");
-        if ((res.status = 200)) {
-          setfilterdata(
-            res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
-          );
-        }
-      } catch (error) {
-        console.log("error", error);
+  const getenquiryfollowup = async () => {
+    try {
+      let res = await axios.get(apiURL + `/filterwithEnquiryId/${EnquiryId}`);
+      if ((res.status = 200)) {
+        setflwdata(res.data?.enquiryfollowup);
       }
-    };
-    getenquiryadd();
-  }, []);
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
 
   useEffect(() => {
-    const getenquiryfollowup = async () => {
-      try {
-        let res = await axios.get(apiURL + "/getenquiryfollowup");
-        if ((res.status = 200)) {
-          setflwdata(
-            res.data?.enquiryfollowup.filter(
-              (item) => item.EnquiryId == EnquiryId
-            )
-          );
-        }
-      } catch (error) {
-        console.log("Error", error);
-      }
-    };
     getenquiryfollowup();
   }, []);
 
@@ -98,7 +84,7 @@ function Enquirynewdetail() {
         data: {
           EnquiryId: EnquiryId,
           staffname: admin.displayname,
-          category: filterdata[0]?.category,
+          category: enquiryData?.category,
           folldate: moment().format("llll"),
           response: whatsappTemplate?.response,
           desc: desc,
@@ -109,9 +95,9 @@ function Enquirynewdetail() {
       };
       await axios(config).then(function (response) {
         if (response.status === 200) {
-          makeApiCall(whatsappTemplate, filterdata[0]?.contact1);
-
-          // window.location.assign(`/enquirydetail/${EnquiryId}`);
+          makeApiCall(whatsappTemplate, enquiryData?.contact1);
+          getenquiryfollowup();
+          window.location.assign(`/enquirydetail/${EnquiryId}?${urlParams}`);
         }
       });
     } catch (error) {
@@ -137,7 +123,7 @@ function Enquirynewdetail() {
           data: {
             EnquiryId: EnquiryId,
             staffname: admin.displayname,
-            category: filterdata[0]?.category,
+            category: enquiryData?.category,
             folldate: moment().format("llll"),
             response: whatsappTemplate?.response,
             desc: desc,
@@ -149,10 +135,11 @@ function Enquirynewdetail() {
         await axios(config).then(function (response) {
           if (response.status === 200) {
             // console.log("success");
+            getenquiryfollowup();
             alert(" Added");
-            makeApiCall(whatsappTemplate, filterdata[0]?.contact1);
+            makeApiCall(whatsappTemplate, enquiryData?.contact1);
 
-            window.location.assign(`/enquirydetail/${EnquiryId}`);
+            window.location.assign(`/enquirydetail/${EnquiryId}?${urlParams}`);
           }
         });
       } catch (error) {
@@ -178,7 +165,7 @@ function Enquirynewdetail() {
           data: {
             EnquiryId: EnquiryId,
             staffname: admin.displayname,
-            category: filterdata[0]?.category,
+            category: enquiryData?.category,
             folldate: moment().format("llll"),
             response: whatsappTemplate?.response,
             desc: desc,
@@ -189,11 +176,11 @@ function Enquirynewdetail() {
         };
         await axios(config).then(function (response) {
           if (response.status === 200) {
-            console.log("success");
+            getenquiryfollowup();
             alert(" Added");
-            makeApiCall(whatsappTemplate, filterdata[0]?.contact1);
+            makeApiCall(whatsappTemplate, enquiryData?.contact1);
 
-            window.location.assign(`/enquirydetail/${EnquiryId}`);
+            window.location.assign(`/enquirydetail/${EnquiryId}?${urlParams}`);
           }
         });
       } catch (error) {
@@ -218,7 +205,7 @@ function Enquirynewdetail() {
           headers: { "content-type": "application/json" },
           data: {
             EnquiryId: EnquiryId,
-            category: filterdata[0]?.category,
+            category: enquiryData?.category,
             staffname: admin.displayname,
             folldate: moment().format("llll"),
             response: whatsappTemplate?.response,
@@ -229,9 +216,9 @@ function Enquirynewdetail() {
         };
         await axios(config).then(function (response) {
           if (response.status === 200) {
-            makeApiCall(whatsappTemplate, filterdata[0]?.contact1);
-
-            navigate(`/convertcustomer/${EnquiryId}`);
+            makeApiCall(whatsappTemplate, enquiryData?.contact1);
+            getenquiryfollowup();
+            navigate(`/convertcustomer/${EnquiryId}?${urlParams}`);
           }
         });
       } catch (error) {
@@ -257,7 +244,7 @@ function Enquirynewdetail() {
           headers: { "content-type": "application/json" },
           data: {
             EnquiryId: EnquiryId,
-            category: filterdata[0]?.category,
+            category: enquiryData?.category,
             staffname: admin.displayname,
             folldate: moment().format("llll"),
             response: whatsappTemplate?.response,
@@ -268,7 +255,7 @@ function Enquirynewdetail() {
         };
         await axios(config).then(function (response) {
           if (response.status === 200) {
-            makeApiCall(whatsappTemplate, filterdata[0]?.contact1);
+            makeApiCall(whatsappTemplate, enquiryData?.contact1);
 
             navigate(`/createquote/${EnquiryId}`);
             // window.location.assign("/convertcustomer",{data});
@@ -287,7 +274,7 @@ function Enquirynewdetail() {
     if (Ask === true) {
       axios({
         method: "post",
-        url: apiURL + "/deleteteenquiry/" + filterdata[0]?._id,
+        url: apiURL + "/deleteteenquiry/" + enquiryData?._id,
       })
         .then(function (response) {
           //handle success
@@ -336,11 +323,11 @@ function Enquirynewdetail() {
 
     const content = contentTemplate.replace(
       /\{Customer_name\}/g,
-      filterdata[0]?.name
+      enquiryData?.name
     );
     const contentWithNames = content.replace(
       /\{Executive_name\}/g,
-      filterdata[0]?.executive
+      enquiryData?.executive
     );
     const contentWithMobile = contentWithNames.replace(
       /\{Executive_contact\}/g,
@@ -375,7 +362,6 @@ function Enquirynewdetail() {
 
       if (response.status === 200) {
         setWhatsappTemplate(response.data);
-        alert("Sent");
       } else {
         console.error("API call unsuccessful. Status code:", response.status);
       }
@@ -468,35 +454,35 @@ function Enquirynewdetail() {
                                 <tbody>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Enquiry ID</td>
-                                    <td>{filterdata[0]?.EnquiryId}</td>
+                                    <td>{enquiryData?.EnquiryId}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Category</td>
-                                    <td> {filterdata[0]?.category}</td>
+                                    <td> {enquiryData?.category}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">
                                       Enquiry Date
                                     </td>
-                                    <td> {filterdata[0]?.enquirydate}</td>
+                                    <td> {enquiryData?.enquirydate}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Executive</td>
-                                    <td>{filterdata[0]?.executive}</td>
+                                    <td>{enquiryData?.executive}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Name</td>
-                                    <td>{filterdata[0]?.name}</td>
+                                    <td>{enquiryData?.name}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Contact 1</td>
                                     <td>
-                                      {filterdata[0]?.contact1} {""}{" "}
+                                      {enquiryData?.contact1} {""}{" "}
                                       <a
-                                        href={`https://wa.me/+91${filterdata[0]?.contact1}`}
+                                        href={`https://wa.me/+91${enquiryData?.contact1}`}
                                         target="_blank"
                                       >
                                         <i
@@ -512,38 +498,38 @@ function Enquirynewdetail() {
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Contact 2</td>
-                                    <td>{filterdata[0]?.contact2} </td>
+                                    <td>{enquiryData?.contact2} </td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Email Id</td>
-                                    <td>{filterdata[0]?.email}</td>
+                                    <td>{enquiryData?.email}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Address</td>
-                                    <td>{filterdata[0]?.address}</td>
+                                    <td>{enquiryData?.address}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Reference</td>
-                                    <td>{filterdata[0]?.reference1}</td>
+                                    <td>{enquiryData?.reference1}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Reference 2</td>
-                                    <td>{filterdata[0]?.reference2}</td>
+                                    <td>{enquiryData?.reference2}</td>
                                   </tr>
 
                                   <tr className="user-tbale-body">
                                     <td className="text-center">
                                       Interested For
                                     </td>
-                                    <td>{filterdata[0]?.intrestedfor}</td>
+                                    <td>{enquiryData?.intrestedfor}</td>
                                   </tr>
                                   <tr className="user-tbale-body">
                                     <td className="text-center">Comment</td>
-                                    <td>{filterdata[0]?.comment}</td>
+                                    <td>{enquiryData?.comment}</td>
                                   </tr>
                                 </tbody>
                               </table>{" "}
@@ -651,7 +637,7 @@ function Enquirynewdetail() {
                                                   item?.response ===
                                                   e.target.value
                                               );
-                                           
+
                                             setWhatsappTemplate(
                                               selectedResponse
                                             );
@@ -914,17 +900,13 @@ function Enquirynewdetail() {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="col-md-2">
-                                     
-                                    </div>
+                                    <div className="col-md-2"></div>
                                   )}
                                 </form>
                               </div>
                             </div>
                           </div>
                         </div>
-
-                       
                       </div>
                     </div>
                   </Tab.Pane>

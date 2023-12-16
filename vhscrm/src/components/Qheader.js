@@ -5,12 +5,10 @@ import Nav1 from "../components/Nav1";
 import Modal from "react-bootstrap/Modal";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-import Formatnav from "../components/Formatnav"
-
-
+import Formatnav from "../components/Formatnav";
 
 function Qheader() {
-  const cat=sessionStorage.getItem("category");
+  const cat = sessionStorage.getItem("category");
   const [serno, setserno] = useState("");
   const [headerimgdata, setheaderimgdata] = useState([]);
   const [footerimgdata, setfooterimgdata] = useState([]);
@@ -30,8 +28,6 @@ function Qheader() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
-
 
   const postformat = async (e) => {
     e.preventDefault();
@@ -55,37 +51,28 @@ function Qheader() {
       alert("category  Not Added");
     }
   };
- 
 
   useEffect(() => {
     getheaderimg();
-
   }, []);
 
   const getheaderimg = async () => {
     let res = await axios.get(apiURL + "/master/getheaderimg");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setheaderimgdata(res.data?.headerimg);
-     
     }
   };
-
-  
 
   function imageFormatter(cell, row) {
     return (
       <img
-      src={
-        imgURL+"/quotationheaderimg/" +
-        cell.headerimg
-      }
+        src={imgURL + "/quotationheaderimg/" + cell.headerimg}
         height="50px"
         width="50px"
       />
     );
   }
 
- 
   const columns = [
     {
       name: "Sl  No",
@@ -110,7 +97,6 @@ function Qheader() {
       ),
     },
   ];
- 
 
   const deleteheaderimg = async (id) => {
     axios({
@@ -129,22 +115,20 @@ function Qheader() {
       });
   };
 
- 
-
   let i = 0;
   return (
     <div className="web">
       <Header />
       <Nav1 />
-    
 
       <div className="row m-auto">
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
-              <p><b>Category:</b> {cat}</p>
+              <p>
+                <b>Category:</b> {cat}
+              </p>
               <Formatnav />
-            
             </div>
           </div>
           <div>
@@ -160,8 +144,6 @@ function Qheader() {
               >
                 Add headerimg
               </button>
-
-             
             </div>
           </div>
           <div className="row">
@@ -179,7 +161,6 @@ function Qheader() {
                 />
               </div>
             </div>
-          
           </div>
 
           <div></div>
@@ -226,7 +207,6 @@ function Qheader() {
           </div>
         </Modal.Body>
       </Modal>
-     
     </div>
   );
 }

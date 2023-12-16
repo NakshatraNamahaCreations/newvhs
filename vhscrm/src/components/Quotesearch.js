@@ -22,7 +22,7 @@ function Quotesearch() {
 
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };
@@ -34,13 +34,13 @@ function Quotesearch() {
 
   const getcity = async () => {
     let res = await axios.get(apiURL + "/master/getcity");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcitydata(res.data?.mastercity);
     }
   };
   const getenquiryadd = async () => {
     let res = await axios.get(apiURL + "/getenquiry");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setenquiryadddata(res.data?.enquiryadd);
     }
   };

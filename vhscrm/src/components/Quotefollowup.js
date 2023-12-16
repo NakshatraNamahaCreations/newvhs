@@ -14,11 +14,8 @@ function Quotefollowup() {
   const [category, setcategory] = useState([]);
   const admin = JSON.parse(sessionStorage.getItem("admin"));
 
-
-
   useEffect(() => {
     getcategory();
-
   }, []);
 
   useEffect(() => {
@@ -29,19 +26,17 @@ function Quotefollowup() {
     let res = await axios.post(apiURL + "/quotecategory", {
       category: category,
     });
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setquoteflwdata(res.data?.quotefollowup);
     }
   };
 
   const getcategory = async () => {
     let res = await axios.get(apiURL + "/getcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setcategorydata(res.data?.category);
     }
   };
-
-  
 
   const localizer = momentLocalizer(moment);
   const navigate = useNavigate();
@@ -69,7 +64,6 @@ function Quotefollowup() {
       state: { data: selectedData },
     });
   };
-
 
   function calculateTotalCount(array) {
     let totalCount = 0;

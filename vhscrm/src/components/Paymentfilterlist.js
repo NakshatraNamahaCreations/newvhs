@@ -764,10 +764,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/layout/Header";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
-import { useLocation, useParams, Link, NavLink } from "react-router-dom";
-import DSRnav from "./DSRnav";
-import moment from "moment";
-import { Button } from "react-bootstrap";
+import { useParams, Link, NavLink } from "react-router-dom";
 
 function Paymentfilterlist() {
   const [treatmentData, settreatmentData] = useState([]);
@@ -781,65 +778,28 @@ function Paymentfilterlist() {
   const [searchTechName, setSearchTechName] = useState("");
   const [searchJobType, setSearchJobType] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
-  const [pendingamt, setpendingamt] = useState("");
+
   const [approach, setApproach] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(25);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const tp = Math.ceil(totalPages / itemsPerPage);
   const apiURL = process.env.REACT_APP_API_URL;
   const { date } = useParams();
-  // const [onlineCount, setOnlineCount] = useState(0);
-  // const [onlineTotal, setOnlineTotal] = useState(0);
 
-  // const [cashCount, setCashCount] = useState(0);
-  // const [cashTotal, setCashTotal] = useState(0);
+  // Pagination logic
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+  const pageOptions = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
 
-  // const [chequeCount, setChequeCount] = useState(0);
-  // const [chequeTotal, setChequeTotal] = useState(0);
+  // Change page
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage);
+  };
 
-  // useEffect(() => {
-  //   let online = 0;
-  //   let onlineTotalAmount = 0;
-
-  //   let cash = 0;
-  //   let cashTotalAmount = 0;
-
-  //   let cheque = 0;
-  //   let chequeTotalAmount = 0;
-
-  //   searchResults.forEach((selectedData) => {
-  //     selectedData.paymentData.forEach((payment) => {
-  //       if (payment.paymentType === "Customer") {
-  //         if (payment.paymentMode === "Cash") {
-  //           cash++;
-  //           cashTotalAmount += parseFloat(payment.amount);
-  //         } else if (payment.paymentMode === "Cheque") {
-  //           cheque++;
-  //           chequeTotalAmount += parseFloat(payment.amount);
-  //         } else {
-  //           online++;
-  //           onlineTotalAmount += parseFloat(payment.amount);
-  //         }
-  //         // ... handle other payment modes similarly
-  //       }
-  //     });
-  //   });
-
-  //   setOnlineCount(online);
-  //   setOnlineTotal(onlineTotalAmount);
-
-  //   setCashCount(cash);
-  //   setCashTotal(cashTotalAmount);
-
-  //   setChequeCount(cheque);
-  //   setChequeTotal(chequeTotalAmount);
-  //   // ... update other state variables for different payment methods
-  // }, [searchResults]);
-
-  // Frontend Logic
-
+  // Calculate the starting serial number based on the current page
+  const startSerialNumber = (currentPage - 1) * itemsPerPage + 1;
   useEffect(() => {
     getservicedata();
   }, [currentPage]);
@@ -854,8 +814,8 @@ function Paymentfilterlist() {
       });
 
       if (res.status === 200) {
-        setTotalPages(res.data?.totalLength);
-
+        // setTotalPages(res.data?.totalLength);
+        console.log("res.data?.runningdata", res.data?.runningdata);
         settreatmentData(res.data?.runningdata);
         setSearchResults(res.data?.runningdata);
       }
@@ -864,43 +824,43 @@ function Paymentfilterlist() {
     }
   };
 
-  useEffect(() => {
-    filterData();
-  }, [
-    city,
-    searchCustomerName,
-    // searchTechName,
-    searchContact,
-    searchJobType,
-    searchDesc,
-  ]);
+  // useEffect(() => {
+  //   filterData();
+  // }, [
+  //   city,
+  //   searchCustomerName,
+  //   // searchTechName,
+  //   searchContact,
+  //   searchJobType,
+  //   searchDesc,
+  // ]);
 
-  const filterData = async () => {
-    try {
-      const response = await axios.get(apiURL + "/serchfilterinpaymentrepots", {
-        params: {
-          city,
-          searchCustomerName,
-          searchContact,
-          date,
-          searchAddress,
-          searchJobType,
-          searchDesc,
+  // const filterData = async () => {
+  //   try {
+  //     const response = await axios.get(apiURL + "/serchfilterinpaymentrepots", {
+  //       params: {
+  //         city,
+  //         searchCustomerName,
+  //         searchContact,
+  //         date,
+  //         searchAddress,
+  //         searchJobType,
+  //         searchDesc,
 
-          // searchTechName,
-        },
-      });
+  //         // searchTechName,
+  //       },
+  //     });
 
-      if (response.status === 200) {
-        setSearchResults(response.data?.runningdata);
-        settreatmentData(response.data?.runningdata);
-      } else {
-        // Handle error
-      }
-    } catch (error) {
-      // Handle error
-    }
-  };
+  //     if (response.status === 200) {
+  //       setSearchResults(response.data?.runningdata);
+  //       settreatmentData(response.data?.runningdata);
+  //     } else {
+  //       // Handle error
+  //     }
+  //   } catch (error) {
+  //     // Handle error
+  //   }
+  // };
 
   useEffect(() => {
     getAlldata();
@@ -996,8 +956,10 @@ function Paymentfilterlist() {
       if (searchTechName) {
         results = results.filter(
           (item) =>
-            item.techName && //no technician name
-            item.techName.toLowerCase().includes(searchTechName.toLowerCase())
+            item.dsrdata[0]?.TechorPMorVendorName &&
+            item.dsrdata[0]?.TechorPMorVendorName.toLowerCase().includes(
+              searchTechName.toLowerCase()
+            )
         );
       }
       if (searchJobType) {
@@ -1028,6 +990,7 @@ function Paymentfilterlist() {
     searchJobType,
     searchDesc,
     approach,
+    searchTechName,
   ]);
 
   let i = 1;
@@ -1179,32 +1142,27 @@ function Paymentfilterlist() {
       </div>
       <div></div>
       <div className="row m-auto">
-        <div className="row m-auto">
+        {/* <div className="row m-auto">
           <div className="pagination-container">
             <span>Page:</span>
             <select
+              className="m-1"
               value={currentPage}
-              onChange={(e) => {
-                setCurrentPage(Number(e.target.value));
-              }}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
             >
-              {Array.from({ length: tp }, (_, index) => index + 1).map(
-                (page) => (
-                  <option key={page} value={page}>
-                    {page}
-                  </option>
-                )
-              )}
+              {pageOptions.map((page) => (
+                <option value={page} key={page}>
+                  {page}
+                </option>
+              ))}
             </select>
+            <span> of {totalPages}</span>
           </div>
-        </div>
+        </div> */}
         <div className="col-md-12">
           <table style={{ width: "113%" }} class=" table-bordered mt-1">
             <thead className="">
-              <tr
-                className="table-secondary"
-                style={{ background: "lightgrey" }}
-              >
+              <tr className="table-secondary" style={{ background: "#e0a7a7" }}>
                 <th className="table-head" scope="col"></th>
 
                 <th className="table-head" style={{ width: "13%" }} scope="col">
@@ -1302,14 +1260,31 @@ function Paymentfilterlist() {
                   />{" "}
                 </th>
                 <th className="table-head" scope="col"></th>
+                <th className="table-head" scope="col">
+                  <select
+                    className="vhs-table-input"
+                    value={searchTechName}
+                    onChange={(e) => setSearchTechName(e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    {[
+                      ...new Set(
+                        treatmentData?.map(
+                          (TECH) => TECH?.dsrdata[0]?.TechorPMorVendorName
+                        )
+                      ),
+                    ].map((uniqueTECH) => (
+                      <option value={uniqueTECH} key={uniqueTECH}>
+                        {uniqueTECH}
+                      </option>
+                    ))}
+                  </select>{" "}
+                </th>
                 <th className="table-head" scope="col"></th>
                 <th className="table-head" scope="col"></th>
                 <th className="table-head" scope="col"></th>
               </tr>
-              <tr
-                className="table-secondary"
-                style={{ background: "lightgrey" }}
-              >
+              <tr className="table-secondary" style={{ background: "#e0a7a7" }}>
                 <th className="table-head" scope="col">
                   Sr.No
                 </th>
@@ -1346,6 +1321,9 @@ function Paymentfilterlist() {
                 <th scope="col" className="table-head">
                   Amount
                 </th>
+                <th scope="col" className="table-head">
+                  Technician
+                </th>
                 <th
                   scope="col"
                   className="table-head"
@@ -1367,7 +1345,7 @@ function Paymentfilterlist() {
               </tr>
             </thead>
             <tbody>
-              {searchResults.map((selectedData) => (
+              {searchResults.map((selectedData, index) => (
                 <tr
                   className="user-tbale-body"
                   style={{
@@ -1379,7 +1357,7 @@ function Paymentfilterlist() {
                         : "white",
                   }}
                 >
-                  <td>{i++}</td>
+                  <td>{startSerialNumber + index}</td>
                   <td>{selectedData.category}</td>
                   <td>{date}</td>
 
@@ -1425,7 +1403,7 @@ function Paymentfilterlist() {
                       )}
                     </td>
                   )}
-
+                  <td>{selectedData?.dsrdata[0]?.TechorPMorVendorName}</td>
                   {selectedData?.paymentMode === "online" ? (
                     <td>
                       {" "}

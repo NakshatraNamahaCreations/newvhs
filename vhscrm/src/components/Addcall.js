@@ -14,9 +14,7 @@ function Addcall() {
   const [customerdata, setcustomerdata] = useState([]);
   const [servicedata, setservicedata] = useState([]);
   const [techniciandata, settechniciandata] = useState([]);
-  const [bookingDate, setbookingDate] = useState(
-    moment().format("DD-MM-YYYY")
-  );
+  const [bookingDate, setbookingDate] = useState(moment().format("DD-MM-YYYY"));
 
   const [priorityLevel, setpriorityLevel] = useState("");
   const [appoDate, setappoDate] = useState(moment().format("YYYY-MM-DD"));
@@ -50,14 +48,14 @@ function Addcall() {
 
   const getsubcategory = async () => {
     let res = await axios.get(apiURL + "/getsubcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setservicedata(res.data?.subcategory);
     }
   };
 
   const gettreatment = async () => {
     let res = await axios.get(apiURL + "/getservicedetails");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       settreatmentdata(res.data?.servicedetails.filter((i) => i.cardNo == id));
     }
   };
@@ -77,7 +75,6 @@ function Addcall() {
   }
 
   const total = calculateTotalPrice(treatmentdata);
-
 
   const save = async (e) => {
     e.preventDefault();
@@ -137,13 +134,13 @@ function Addcall() {
 
   const getservices = async () => {
     let res = await axios.get(apiURL + "/getsubcategory");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setservicedata(res.data?.subcategory);
     }
   };
   const gettechnician = async () => {
     let res = await axios.get(apiURL + "/getalltechnician");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       settechniciandata(res.data?.technician);
     }
   };

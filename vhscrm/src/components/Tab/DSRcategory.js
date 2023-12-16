@@ -91,7 +91,6 @@ function DSRcategory() {
   }, [dCategory, rstart, rend]);
 
   const postAllJobs = async () => {
-    console.log("call api");
     try {
       const res = await axios.post(apiURL + "/postservicecatdevideddatesnew", {
         category: dCategory,
@@ -100,8 +99,8 @@ function DSRcategory() {
       });
 
       if (res.status === 200) {
-        settotalservice(res.data.dataSize);
-        console.log("res.data.dataSize", res.data.dividedDates);
+        // settotalservice(res.data.dataSize);
+
         setdsrnewdata(res.data?.dividedDates);
       }
     } catch (error) {
@@ -203,7 +202,7 @@ function DSRcategory() {
                 textAlign: "center",
               }}
             >
-              <p class="header-text">DSR - {totalservice} </p>
+              <p class="header-text">DSR - {totalCount} </p>
             </div>
           </div>
         </div>

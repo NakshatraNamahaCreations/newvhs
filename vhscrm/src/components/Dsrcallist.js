@@ -31,7 +31,7 @@ function Dsrcallist() {
 
   useEffect(() => {
     getservicedata();
-  }, [currentPage]); // Update data when category, date, or currentPage changes
+  }, [category]); // Update data when category, date, or currentPage changes
 
   const getservicedata = async () => {
     try {
@@ -46,10 +46,7 @@ function Dsrcallist() {
 
       if (res.status === 200) {
         const allData = res.data?.runningdata;
-        setTotalPages(res.data?.totalLength);
 
-        console.log("res.data?.totalLength", res.data?.totalLength);
-        // Update state with filtered results
         setSearchResults(allData);
         settreatmentData(allData);
       }
@@ -68,46 +65,6 @@ function Dsrcallist() {
 
       if (res.status === 200) {
         setdsrdata1(res.data.filterwithservicedata);
-      }
-    } catch (error) {
-      // Handle error
-    }
-  };
-
-  useEffect(() => {
-    filterData();
-  }, [
-    city,
-    searchCustomerName,
-    // searchTechName,
-    searchContact,
-    searchJobType,
-    searchDesc,
-  ]);
-
-  const filterData = async () => {
-    console.log("ccall the api ", city);
-    try {
-      const response = await axios.get(apiURL + "/serchfilterdsr", {
-        params: {
-          city,
-          searchCustomerName,
-          searchContact,
-          category,
-          date,
-          searchAddress,
-          searchJobType,
-          searchDesc,
-          searchpaymentMode,
-          // searchTechName,
-        },
-      });
-
-      if (response.status === 200) {
-        setSearchResults(response.data?.runningdata);
-        settreatmentData(response.data?.runningdata);
-      } else {
-        // Handle error
       }
     } catch (error) {
       // Handle error
@@ -221,8 +178,6 @@ function Dsrcallist() {
     searchpaymentMode,
     searchTechName,
   ]);
-
-  let i = 1;
 
   const passfunction = (sId) => {
     const filt = dsrdata1.filter(
@@ -396,7 +351,7 @@ function Dsrcallist() {
       </div>
 
       <div className="row m-auto">
-        <div className="pagination-container">
+        {/* <div className="pagination-container">
           <span>Page:</span>
           <select
             value={currentPage}
@@ -410,7 +365,7 @@ function Dsrcallist() {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
         <div className="col-md-12">
           <table
             class="table table-hover table-bordered mt-1"

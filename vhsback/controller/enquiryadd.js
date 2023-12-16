@@ -1,3 +1,4 @@
+const moment = require("moment");
 const enquiryaddmodel = require("../model/enquiryadd");
 
 class addenquiry {
@@ -63,7 +64,7 @@ class addenquiry {
         intrestedfor,
         serviceID, //05-10
         responseType,
-        deliveryAddress
+        deliveryAddress,
         // counter,
       });
       newVendor.save().then((data) => {
@@ -296,15 +297,13 @@ class addenquiry {
     }
   }
 
-  async  getEnquiryAndAggregate(req, res) {
+  async getEnquiryAndAggregate(req, res) {
     try {
-      let EnquiryId = req.params.id; 
-
-console.log("EnquiryId",EnquiryId)
+      let EnquiryId = req.params.id;
 
       let aggregatedData = await enquiryaddmodel.aggregate([
         {
-          $match: { EnquiryId: EnquiryId } // Match the EnquiryId obtained from the enquiry
+          $match: { EnquiryId: EnquiryId }, // Match the EnquiryId obtained from the enquiry
         },
         {
           $lookup: {
@@ -331,39 +330,49 @@ console.log("EnquiryId",EnquiryId)
           },
         },
       ]);
-  
-      
-      return res.json({ enquiryadd: aggregatedData});
+
+      return res.json({ enquiryadd: aggregatedData });
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   }
-  
 
   async getallnewfollow(req, res) {
-    let quote = await enquiryaddmodel.aggregate([
-      {
-        $lookup: {
-          from: "enquiryfollowups",
-          localField: "EnquiryId",
-          foreignField: "EnquiryId",
-          as: "enquiryFollow",
+    try {
+      let result = await enquiryaddmodel.aggregate([
+        {
+          $lookup: {
+            from: "enquiryfollowups",
+            localField: "EnquiryId",
+            foreignField: "EnquiryId",
+            as: "enquiryFollow",
+          },
         },
-      },
-    
-    ]);
-    if (quote) {
-      return res.json({ enquiryadd: quote });
+        {
+          $match: {
+            enquiryFollow: { $eq: [] },
+          },
+        },
+      ]);
+
+      if (result) {
+        return res.json({ enquiryadd: result });
+      }
+    } catch (error) {
+      console.error("Error in getallnewfollow:", error);
+      return res.status(500).json({ error: "Something went wrong" });
     }
   }
 
-  
-  async  findWithEnquiryID(req, res) {
+  async findWithEnquiryID(req, res) {
     try {
       let EnquiryId = req.params.id;
-  
-      const data = await enquiryaddmodel.find({ EnquiryId }).sort({ _id: -1 }).exec();
-  
+
+      const data = await enquiryaddmodel
+        .find({ EnquiryId })
+        .sort({ _id: -1 })
+        .exec();
+
       if (data && data.length > 0) {
         return res.status(200).json({ enquiryadd: data });
       } else {
@@ -373,13 +382,75 @@ console.log("EnquiryId",EnquiryId)
       return res.status(500).json({ error: err.message });
     }
   }
-  
+
   //Get all
   async getallenquiryadd(req, res) {
     let data = await enquiryaddmodel.find({}).sort({ _id: -1 });
     if (data) {
       return res.status(200).json({ enquiryadd: data });
     } else {
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+
+  async getLatestEnquiryAdd(req, res) {
+    try {
+      let data = await enquiryaddmodel.findOne({}).sort({ _id: -1 }).limit(1);
+
+      if (data) {
+        return res.status(200).json({ enquiryadd: data });
+      } else {
+        return res.status(404).json({ error: "No data found" });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+  async getenquiryfilter(req, res) {
+    try {
+      const { name, city, fromdate, todate, executive, contact, status } =
+        req.body;
+      const formattedFromDate = moment(fromdate).format("DD-MM-YYYY");
+      const formattedtoDate = moment(todate).format("DD-MM-YYYY");
+
+      const filter = {};
+
+      if (name) {
+        filter.name = { $regex: new RegExp(name, "i") };
+      }
+
+      if (city) {
+        filter.city = city;
+      }
+
+      if (fromdate && todate) {
+        filter.enquirydate = { $gte: formattedFromDate, $lte: formattedtoDate };
+      }
+
+      if (executive) {
+        filter.executive = { $regex: new RegExp(executive, "i") };
+      }
+
+      if (contact) {
+        filter.contact1 = { $regex: new RegExp(contact, "i") };
+      }
+
+      if (status) {
+        filter.status = status;
+      }
+
+      const data = await enquiryaddmodel
+        .find(filter)
+        .sort({ _id: -1 })
+        .limit(10);
+
+      if (data && data.length > 0) {
+        return res.status(200).json({ enquiryadd: data });
+      } else {
+        return res.status(404).json({ error: "No data found" });
+      }
+    } catch (error) {
+      console.error("Error in getallenquiryadd:", error);
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
