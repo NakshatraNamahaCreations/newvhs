@@ -1,13 +1,35 @@
 const addcallModel = require("../model/addcall");
 const servicedetailsmodel = require("../model/servicedetails");
-const memoryCache = require('memory-cache');
+
 function isSameDate(date1, date2) {
-  return date1.getFullYear() === date2.getFullYear() &&
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
+    date1.getDate() === date2.getDate()
+  );
 }
 
+function isSameWeek(date1, date2) {
+  const firstDate = new Date(date1);
+  const secondDate = new Date(date2);
 
+  const firstWeek = getWeekNumber(firstDate);
+  const secondWeek = getWeekNumber(secondDate);
+
+  return firstWeek === secondWeek;
+}
+
+function getWeekNumber(date) {
+  const d = new Date(date);
+
+  d.setHours(0, 0, 0, 0);
+
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+
+  return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+}
 class addcall {
   //add customer
   async save(req, res) {
@@ -107,7 +129,7 @@ class addcall {
         return res.json({ success: "dsr data added successfully" });
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }
@@ -179,7 +201,7 @@ class addcall {
         jobComplete,
         amount,
         jobType,
-        TechorPMorVendorID:TechorPMorVendorID,
+        TechorPMorVendorID: TechorPMorVendorID,
         TechorPMorVendorName,
         cancelOfficerName,
         cancelOfferNumber,
@@ -191,18 +213,32 @@ class addcall {
     }
   }
 
-  async reshecdule(req, res) {
-    let id = req.params.id;
+  async reschedule(req, res) {
+    try {
+      const id = req.params.id;
+      const { serviceDate } = req.body;
 
-    let { serviceDate } = req.body;
-    let data = await addcallModel.findOneAndUpdate(
-      { _id: id },
-      {
-        serviceDate,
+      // Check if serviceDate is provided
+      if (!serviceDate) {
+        return res.status(400).json({ error: "Service date is required" });
       }
-    );
-    if (data) {
-      return res.json({ success: "Updated" });
+
+      // Use the { new: true } option to return the updated document
+      const data = await addcallModel.findOneAndUpdate(
+        { _id: id },
+        { serviceDate },
+        { new: true }
+      );
+
+      // Check if the document was found and updated
+      if (data) {
+        return res.json({ success: "Updated", data });
+      } else {
+        return res.json({ success: "" });
+      }
+    } catch (error) {
+      console.log(error.message);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 
@@ -222,6 +258,7 @@ class addcall {
 
       res.status(200).json(updatedCall);
     } catch (error) {
+      console.log(error.message);
       res.status(500).json({ error: "Error updating the call data." });
     }
   }
@@ -256,56 +293,74 @@ class addcall {
       }
       res.status(200).json(updatedCall);
     } catch (error) {
+      console.log(error.message);
       res.status(500).json({ error: "Error updating the call data." });
     }
   }
 
   async getfindwithtechid(req, res) {
-    const  TechorPMorVendorID  = req.params.id; 
-  
+    const TechorPMorVendorID = req.params.id;
+
     try {
-      const data = await addcallModel.find({ TechorPMorVendorID }).sort({ _id: -1 });
-  
+      const data = await addcallModel
+        .find({ TechorPMorVendorID })
+        .sort({ _id: -1 });
+
       if (data && data.length > 0) {
         return res.status(200).json({ techservicedata: data });
       } else {
-        return res.status(404).json({ error: "No data found for the provided ID" });
+        return res
+          .status(404)
+          .json({ error: "No data found for the provided ID" });
       }
     } catch (error) {
+      console.log(error.message);
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
   async getfindwithtechidwithfilter(req, res) {
-    const TechorPMorVendorID = req.params.id; 
-  
+    const TechorPMorVendorID = req.params.id;
+
     try {
-      const data = await addcallModel.find({ TechorPMorVendorID }).sort({ _id: -1 });
-  
+      const data = await addcallModel
+        .find({ TechorPMorVendorID })
+        .sort({ _id: -1 });
+
       if (data && data.length > 0) {
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
-  
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Start of the current week (Sunday)
+
         const filteredData = {
-          todayData: data.filter(item => isSameDate(new Date(item.serviceDate), today)),
-          tomorrowData: data.filter(item => isSameDate(new Date(item.serviceDate), tomorrow)),
-          yesterdayData: data.filter(item => isSameDate(new Date(item.serviceDate), yesterday)),
+          todayData: data.filter((item) =>
+            isSameDate(new Date(item.serviceDate), today)
+          ),
+          tomorrowData: data.filter((item) =>
+            isSameDate(new Date(item.serviceDate), tomorrow)
+          ),
+          yesterdayData: data.filter((item) =>
+            isSameDate(new Date(item.serviceDate), yesterday)
+          ),
+          thisWeekData: data.filter((item) =>
+            isSameWeek(new Date(item.serviceDate), startOfWeek)
+          ),
           // Add other filters for this week, etc.
         };
-  
+
         return res.status(200).json({ techservicedata: filteredData });
       } else {
-        return res.status(404).json({ techservicedata:[] });
+        return res.status(404).json({ techservicedata: [] });
       }
     } catch (error) {
+      console.log(error.message);
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
-  
-  
-  
+
   async postcategory(req, res) {
     let { category } = req.body;
     let data = await addcallModel.find({ category }).sort({ _id: -1 });
@@ -333,61 +388,6 @@ class addcall {
       res.status(500).json({ error: "Error updating the call data." });
     }
   }
-
-
-  // async  getallagreedata(req, res) {
-  //   try {
-  //     let data = await addcallModel.aggregate([
-  //       {
-  //         $match: {
-  //           /* Define your match conditions here */
-  //           // Example: Filter documents where the status is "completed"
-  //           status: "completed",
-  //           // Add more conditions as needed
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: "servicedetails",
-  //           localField: "cardNo",
-  //           foreignField: "cardNo",
-  //           as: "servicedetails",
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: "customers",
-  //           localField: "cardNo",
-  //           foreignField: "cardNo",
-  //           as: "customer",
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: "quotes",
-  //           localField: "cardNo",
-  //           foreignField: "cardNo",
-  //           as: "quotedata",
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: "technicians",
-  //           localField: "TechorPMorVendorID",
-  //           foreignField: "_id",
-  //           as: "techdata",
-  //         },
-  //       },
-  //     ]);
-  
-  //     if (data) {
-  //       return res.json({ addcall: data });
-  //     }
-  //   } catch (error) {
-  //     return res.status(500).json({ error: "Something went wrong" });
-  //   }
-  // }
-  
 
   async getallagreedata(req, res) {
     try {
@@ -444,7 +444,6 @@ class addcall {
             as: "servicedetails",
           },
         },
-       
       ]);
       if (data) {
         return res.json({ addcall: data });
@@ -455,40 +454,42 @@ class addcall {
   }
 
   async getservicedatadate(req, res) {
-    const  serviceDate  = req.params.serviceDate; // Assuming the ID is provided in the request parameters
-  
+    const serviceDate = req.params.serviceDate; // Assuming the ID is provided in the request parameters
 
     try {
       const data = await addcallModel.find({ serviceDate }).sort({ _id: -1 });
-  
+
       if (data && data.length > 0) {
         return res.status(200).json({ filterwithservicedata: data });
       } else {
-        return res.status(404).json({ error: "No data found for the provided ID" });
+        return res
+          .status(404)
+          .json({ error: "No data found for the provided ID" });
       }
     } catch (error) {
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
-  
+
   async filterwithtectandservicedate(req, res) {
-    const  serviceDate  = req.params.serviceDate;
-    const  TechorPMorVendorID  = req.params.techid;
-  
+    const serviceDate = req.params.serviceDate;
+    const TechorPMorVendorID = req.params.techid;
 
     try {
       let query = { serviceDate };
-  
+
       if (TechorPMorVendorID) {
         query.TechorPMorVendorID = TechorPMorVendorID;
       }
-  
+
       const data = await addcallModel.find(query).sort({ _id: -1 });
-  
+
       if (data && data.length > 0) {
         return res.status(200).json({ techfilterid: data });
       } else {
-        return res.status(404).json({ error: "No data found for the provided parameters" });
+        return res
+          .status(404)
+          .json({ error: "No data found for the provided parameters" });
       }
     } catch (error) {
       return res.status(500).json({ error: "Something went wrong" });
@@ -496,29 +497,27 @@ class addcall {
   }
 
   async getserviceIDanddate(req, res) {
-    const  serviceDate  = req.params.serviceDate;
-    const  serviceId  = req.params.serviceId;
-  
+    const serviceDate = req.params.serviceDate;
+    const serviceId = req.params.serviceId;
 
     try {
       let query = { serviceDate };
-  
+
       if (serviceId) {
         query.serviceId = serviceId;
       }
-  
+
       const data = await addcallModel.find(query).sort({ _id: -1 });
-  
+
       if (data && data.length > 0) {
         return res.status(200).json({ filterwithservicedata: data });
       } else {
-        return res.status(404).json({filterwithservicedata:[] });
+        return res.status(404).json({ filterwithservicedata: [] });
       }
     } catch (error) {
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
-  
 
   async getalldsrcall(req, res) {
     let data = await addcallModel.find({}).sort({ _id: -1 });
